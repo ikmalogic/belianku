@@ -160,8 +160,8 @@
                 </li>
                 <!-- (AKHIR PERBAIKAN) -->
                 
-                <!-- Tombol Collapsible Card (Toggle) -->
-                <li class="px-4 py-3 flex justify-between items-center border-t border-notion-border dark:border-notion-border-dark mt-2 pt-4">
+                <!-- (PERBAIKAN) Wrapper untuk Tombol Collapsible Card -->
+                <li id="card-toggle-wrapper" class="px-4 py-3 flex justify-between items-center border-t border-notion-border dark:border-notion-border-dark mt-2 pt-4">
                     <span class="font-medium text-sm">Tutup Kartu</span>
                     <button id="card-toggle-switch" type="button" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-200 dark:bg-gray-700 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-notion-card-dark" role="switch" aria-checked="false">
                         <span class="sr-only">Tutup Kartu</span>
@@ -260,33 +260,8 @@
                 </p>
             </form>
 
-            <!-- (PERBAIKAN) Pemisah 'ATAU' dan tombol Google Login -->
-            <div class="relative my-6">
-                <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div class="w-full border-t border-notion-border dark:border-notion-border-dark"></div>
-                </div>
-                <div class="relative flex justify-center">
-                    <span class="bg-notion-card dark:bg-notion-card-dark px-2 text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark">ATAU</span>
-                </div>
-            </div>
-
-            <div>
-                <button type="button" id="google-login-btn" class="btn-secondary w-full flex items-center justify-center gap-3">
-                    <!-- SVG Logo Google -->
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
-                        <path fill="#FF3D00" d="M6.306 14.691L22.99 21.905L17.509 10.22C15.56 7.903 12.019 6.306 8.327 7.151C5.071 7.892 2.348 10.82 2.022 14.366c-.114 1.251.272 2.493.98 3.491l3.304-3.166z"></path>
-                        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path>
-                        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-0.792 2.237-2.231 4.166-4.087 5.574l6.19 5.238C39.999 36.661 44 31.138 44 24c0-1.341-.138-2.65-.389-3.917z"></path>
-                    </svg>
-                    Masuk dengan Google
-                </button>
-            </div>
-            <!-- (AKHIR PERBAIKAN) -->
-
-
             <!-- Opsi Login Anonim -->
-            <div class="text-center mt-6 pt-6 border-t border-notion-border dark:border-notion-border-dark">
+            <div class="text-center mt-4 pt-4 border-t border-notion-border dark:border-notion-border-dark">
                 <button type="button" id="anonymous-login-btn" class="btn-secondary">Coba sebagai Tamu</button>
                 <p class="text-xs text-notion-text-subtle mt-2">(Data hanya tersimpan di perangkat ini)</p>
             </div>
@@ -300,11 +275,19 @@
         <!-- === KONTEN UTAMA APLIKASI (Sekarang dibungkus) === -->
         <div id="main-content" class="hidden">
         
-            <!-- (PERBAIKAN) Wrapper Tombol Tambah (untuk show/hide) -->
+            <!-- (PERBAIKAN) Wrapper Tombol Tambah Produk (untuk show/hide) -->
             <div id="add-product-btn-wrapper" class="mb-6 hidden">
                 <button id="add-product-btn" class="btn-primary w-full md:w-auto flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     Tambah Produk Baru
+                </button>
+            </div>
+            
+            <!-- (PERBAIKAN BARU) Wrapper Tombol Tambah Password -->
+            <div id="add-password-btn-wrapper" class="mb-6 hidden">
+                <button id="add-password-btn" class="btn-primary w-full md:w-auto flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    Tambah Password Baru
                 </button>
             </div>
 
@@ -327,11 +310,23 @@
                 </div>
             </div>
 
-            <!-- (PERBAIKAN) Wrapper Konten Password -->
-            <div id="password-content" class="text-center text-notion-text-subtle py-10 border-2 border-dashed border-notion-border dark:border-notion-border-dark rounded-lg hidden">
-                <h2 class="text-xl font-semibold mb-2">My Password</h2>
-                <p>Fitur ini sedang dalam pengembangan.</p>
-                <p class="text-sm">Nanti di sini Anda bisa menambah dan mengelola password Anda.</p>
+            <!-- (PERBAIKAN BARU) Wrapper Konten Password -->
+            <div id="password-content" class="hidden">
+                <!-- Status Loading Password -->
+                <div id="password-loading-state" class="text-center text-notion-text-subtle py-10 hidden">
+                    <p>Memuat password...</p>
+                </div>
+                
+                <!-- Status Kosong Password -->
+                <div id="password-empty-state" class="text-center text-notion-text-subtle py-10 border-2 border-dashed border-notion-border dark:border-notion-border-dark rounded-lg hidden">
+                    <p>Belum ada password yang disimpan.</p>
+                    <p class="text-sm">Klik "Tambah Password Baru" untuk memulai.</p>
+                </div>
+
+                <!-- Daftar Password -->
+                <div id="password-list" class="space-y-4">
+                    <!-- Kartu Password akan dimasukkan di sini oleh JavaScript -->
+                </div>
             </div>
 
         </div>
@@ -340,8 +335,7 @@
 
     </div> <!-- Akhir Kontainer Utama -->
 
-    <!-- Modal Form (Tambah/Edit Produk) -->
-    <!-- === (MODIFIKASI) Modal Form - Input diberi tombol 'x' === -->
+    <!-- === MODAL FORM PRODUK (Tambah/Edit Produk) === -->
     <div id="form-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 hidden">
         <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <form id="product-form" class="p-6 space-y-4">
@@ -358,7 +352,7 @@
                 
                 <input type="hidden" id="product-id">
                 
-                <!-- (BARU) Tipe Transaksi -->
+                <!-- Tipe Transaksi -->
                 <div>
                     <label for="tipeTransaksi" class="block text-sm font-medium mb-1">Tipe Entri</label>
                     <div class="relative">
@@ -370,7 +364,7 @@
                     </div>
                 </div>
                 
-                <!-- (MODIFIKASI) Wrapper untuk bidang khusus Purchase -->
+                <!-- Wrapper untuk bidang khusus Purchase -->
                 <div id="purchase-fields" class="hidden space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Tanggal Beli -->
@@ -396,7 +390,7 @@
                     </div>
                 </div>
                 
-                <!-- (BARU) Wrapper untuk bidang khusus Subscribe -->
+                <!-- Wrapper untuk bidang khusus Subscribe -->
                 <div id="subscribe-fields" class="hidden space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Tanggal Mulai Langganan -->
@@ -586,8 +580,7 @@
         </div>
     </div>
     
-    <!-- Modal Konfirmasi Hapus -->
-    <!-- (Tidak ada perubahan pada modal ini) -->
+    <!-- (BARU) Modal Konfirmasi Hapus Produk -->
     <div id="confirm-delete-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 hidden">
          <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-sm p-6">
             <h3 class="text-lg font-semibold mb-2">Hapus Produk?</h3>
@@ -595,6 +588,113 @@
             <div class="flex justify-end gap-3">
                 <button type="button" id="cancel-delete-btn" class="btn-secondary">Batal</button>
                 <button type="button" id="confirm-delete-btn" class="btn-danger">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- === (PERBAIKAN BARU) MODAL FORM PASSWORD === -->
+    <div id="password-form-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 hidden">
+        <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <form id="password-form" class="p-6 space-y-4">
+                
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="password-modal-title" class="text-xl font-semibold">Tambah Password Baru</h2>
+                    <button type="button" id="password-modal-close-btn" class="btn-icon" aria-label="Tutup modal">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                
+                <div id="password-modal-error" class="hidden text-red-600 text-sm p-3 bg-red-100 dark:bg-red-900 dark:text-red-200 rounded-md"></div>
+                
+                <input type="hidden" id="password-id">
+                
+                <!-- Nama Platform/Website -->
+                <div>
+                    <label for="namaPlatform" class="block text-sm font-medium mb-1">Nama Platform/Website</label>
+                    <div class="relative input-wrapper">
+                        <input type="text" id="namaPlatform" class="notion-input pr-10" placeholder="Contoh: Google, Facebook, dll." required>
+                        <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Link URL -->
+                <div>
+                    <label for="linkUrl" class="block text-sm font-medium mb-1">Link URL</label>
+                    <div class="relative input-wrapper">
+                        <input type="url" id="linkUrl" class="notion-input pr-10" placeholder="https://website.com">
+                        <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Username -->
+                    <div>
+                        <label for="username" class="block text-sm font-medium mb-1">Username</label>
+                        <div class="relative input-wrapper">
+                            <input type="text" id="username" class="notion-input pr-10">
+                            <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium mb-1">Email</label>
+                        <div class="relative input-wrapper">
+                            <input type="email" id="email" class="notion-input pr-10">
+                            <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Password -->
+                <div>
+                    <label for="passwordEntry" class="block text-sm font-medium mb-1">Password</label>
+                    <div class="relative input-wrapper">
+                        <input type="password" id="passwordEntry" class="notion-input pr-20" placeholder="••••••••">
+                        <button type="button" class="clear-btn absolute inset-y-0 right-10 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                        <button type="button" class="btn-toggle-password absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle" aria-label="Tampilkan password">
+                            <svg class="w-5 h-5 toggle-pass-icon-show" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <svg class="w-5 h-5 toggle-pass-icon-hide hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064 7 9.542 7 .847 0 1.67.129 2.468.375M17.608 14.608A4.986 4.986 0 0017 12a5 5 0 00-5-5 4.986 4.986 0 00-2.608.608M5 5l14 14"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Catatan -->
+                <div>
+                    <label for="passwordCatatan" class="block text-sm font-medium mb-1">Catatan</label>
+                    <div class="relative input-wrapper">
+                        <textarea id="passwordCatatan" rows="3" class="notion-input pr-10" placeholder="Info tambahan, security question, dll."></textarea>
+                        <button type="button" class="clear-btn absolute top-2.5 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" id="password-modal-cancel-btn" class="btn-secondary">Batal</button>
+                    <button type="submit" id="password-modal-save-btn" class="btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- (PERBAIKAN BARU) Modal Konfirmasi Hapus Password -->
+    <div id="confirm-delete-password-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 hidden">
+         <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-sm p-6">
+            <h3 class="text-lg font-semibold mb-2">Hapus Password?</h3>
+            <p class="text-notion-text-subtle dark:text-notion-text-subtle-dark mb-6">Apakah Anda yakin ingin menghapus data untuk <strong id="password-name-to-delete"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="flex justify-end gap-3">
+                <button type="button" id="cancel-delete-password-btn" class="btn-secondary">Batal</button>
+                <button type="button" id="confirm-delete-password-btn" class="btn-danger">Ya, Hapus</button>
             </div>
         </div>
     </div>
@@ -610,9 +710,7 @@
             onAuthStateChanged,
             createUserWithEmailAndPassword,
             signInWithEmailAndPassword,
-            signOut,
-            GoogleAuthProvider, // (PERBAIKAN) Ditambahkan
-            signInWithPopup     // (PERBAIKAN) Ditambahkan
+            signOut
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, 
@@ -629,48 +727,79 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- 1. Inisialisasi Firebase ---
-        // (Tidak ada perubahan)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        let db, auth, userId, unsubscribeFromProducts;
+        let db, auth, userId;
+        
+        // (PERBAIKAN BARU) Variabel terpisah untuk data
+        let unsubscribeFromProducts, unsubscribeFromPasswords;
         let allProducts = []; 
+        let allPasswords = [];
+        
         let productToDeleteId = null;
-        let currentView = 'my-purchase'; // (PERBAIKAN) Ini akan dikelola oleh updateMainView
-        let isCardViewCollapsed = false; // (PERBAIKAN) Status tampilan kartu
+        let passwordToDeleteId = null; // (BARU)
+        
+        let currentView = 'my-purchase'; // Ini akan dikelola oleh updateMainView
+        let isCardViewCollapsed = false; 
         
         // --- DOM Elements ---
-        // (Tidak ada perubahan)
         const themeToggle = document.getElementById('theme-toggle');
         const themeIconDark = document.getElementById('theme-icon-dark');
         const themeIconLight = document.getElementById('theme-icon-light');
         const pageTitle = document.getElementById('page-title');
-        const productList = document.getElementById('product-list');
-        const loadingState = document.getElementById('loading-state');
-        const emptyState = document.getElementById('empty-state');
+        
+        // DOM Auth
         const authContainer = document.getElementById('auth-container');
-        const mainContent = document.getElementById('main-content');
-        const userInfo = document.getElementById('user-info');
-        const userEmail = document.getElementById('user-email');
-        const logoutBtn = document.getElementById('logout-btn');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
         const showRegisterBtn = document.getElementById('show-register-btn');
         const showLoginBtn = document.getElementById('show-login-btn');
         const anonymousLoginBtn = document.getElementById('anonymous-login-btn');
         const authError = document.getElementById('auth-error');
+        
+        // DOM Sidebar
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
         const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
         const sidebarMenuList = document.getElementById('sidebar-menu-list'); 
+        const userInfo = document.getElementById('user-info');
+        const userEmail = document.getElementById('user-email');
+        const logoutBtn = document.getElementById('logout-btn');
+        const cardToggleWrapper = document.getElementById('card-toggle-wrapper'); // (BARU)
+        const cardToggleSwitch = document.getElementById('card-toggle-switch');
+        const cardToggleHandle = document.getElementById('card-toggle-handle');
+        
+        // DOM Header & Search
         const searchInput = document.getElementById('search-input');
         const searchToggleBtn = document.getElementById('search-toggle-btn');
         const searchWrapper = document.getElementById('search-wrapper');
+        
+        // DOM Konten Utama
+        const mainContent = document.getElementById('main-content');
+        
+        // DOM Konten Produk
+        const addProductBtnWrapper = document.getElementById('add-product-btn-wrapper');
         const addProductBtn = document.getElementById('add-product-btn');
+        const productContent = document.getElementById('product-content');
+        const productList = document.getElementById('product-list');
+        const loadingState = document.getElementById('loading-state');
+        const emptyState = document.getElementById('empty-state');
+        
+        // (PERBAIKAN BARU) DOM Konten Password
+        const addPasswordBtnWrapper = document.getElementById('add-password-btn-wrapper');
+        const addPasswordBtn = document.getElementById('add-password-btn');
+        const passwordContent = document.getElementById('password-content');
+        const passwordList = document.getElementById('password-list');
+        const passwordLoadingState = document.getElementById('password-loading-state');
+        const passwordEmptyState = document.getElementById('password-empty-state');
+        
+        // DOM Modal Produk
         const formModal = document.getElementById('form-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalCloseBtn = document.getElementById('modal-close-btn');
         const modalCancelBtn = document.getElementById('modal-cancel-btn');
         const productForm = document.getElementById('product-form');
+        const modalError = document.getElementById('modal-error');
         const confirmDeleteModal = document.getElementById('confirm-delete-modal');
         const productNameToDelete = document.getElementById('product-name-to-delete');
         const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
@@ -690,20 +819,24 @@
         const periodeLanggananSelect = document.getElementById('periodeLangganan');
         const periodeLanggananLainnyaContainer = document.getElementById('periodeLanggananLainnyaContainer');
         const periodeLanggananLainnyaInput = document.getElementById('periodeLanggananLainnya');
-        const cardToggleSwitch = document.getElementById('card-toggle-switch');
-        const cardToggleHandle = document.getElementById('card-toggle-handle');
+        
+        // DOM Gemini
         const geminiFeatureContainer = document.getElementById('gemini-feature-container');
         const geminiInfoBtn = document.getElementById('gemini-info-btn');
         const geminiLoading = document.getElementById('gemini-loading');
         const geminiResponseContainer = document.getElementById('gemini-response-container');
         
-        // (PERBAIKAN) Elemen DOM baru untuk view
-        const addProductBtnWrapper = document.getElementById('add-product-btn-wrapper');
-        const productContent = document.getElementById('product-content');
-        const passwordContent = document.getElementById('password-content');
-        
-        // (PERBAIKAN) Elemen DOM baru untuk Google Login
-        const googleLoginBtn = document.getElementById('google-login-btn');
+        // (PERBAIKAN BARU) DOM Modal Password
+        const passwordFormModal = document.getElementById('password-form-modal');
+        const passwordModalTitle = document.getElementById('password-modal-title');
+        const passwordModalCloseBtn = document.getElementById('password-modal-close-btn');
+        const passwordModalCancelBtn = document.getElementById('password-modal-cancel-btn');
+        const passwordForm = document.getElementById('password-form');
+        const passwordModalError = document.getElementById('password-modal-error');
+        const confirmDeletePasswordModal = document.getElementById('confirm-delete-password-modal');
+        const passwordNameToDelete = document.getElementById('password-name-to-delete');
+        const cancelDeletePasswordBtn = document.getElementById('cancel-delete-password-btn');
+        const confirmDeletePasswordBtn = document.getElementById('confirm-delete-password-btn');
 
 
         // --- FUNGSI UTAMA APLIKASI ---
@@ -756,14 +889,12 @@
 
 
         // --- 3. Autentikasi Firebase ---
-        
-        // (PERBAIKAN) Dihapus pemanggilan loadProducts() ganda
         function setupAuthListener() {
+            // (Tidak ada perubahan)
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     userId = user.uid;
                     showLoggedInUI(user);
-                    // loadProducts(); // (DIHAPUS) - Sudah dipanggil di dalam showLoggedInUI
                 } else {
                     try {
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token !== "") {
@@ -795,27 +926,43 @@
             }
             emptyState.classList.add('hidden');
             
-            loadProducts(); // Panggil ini untuk menyiapkan listener data
+            loadProducts(); // Panggil ini untuk menyiapkan listener data produk
+            loadPasswords(); // (BARU) Panggil ini untuk listener data password
+            
             updateMainView('my-purchase'); // Panggil ini untuk mengatur UI awal
         }
 
         function showLoggedOutUI() {
-            // (Tidak ada perubahan)
             authContainer.classList.remove('hidden');
             mainContent.classList.add('hidden');
             userInfo.classList.add('hidden');
             authError.textContent = '';
+            
+            // (PERBAIKAN BARU) Reset semua data
             allProducts = [];
+            allPasswords = [];
+            
             searchInput.value = '';
             searchWrapper.classList.add('hidden');
             searchToggleBtn.classList.remove('hidden');
+            
+            // (PERBAIKAN BARU) Hentikan kedua listener
             if (unsubscribeFromProducts) {
                 unsubscribeFromProducts();
                 unsubscribeFromProducts = null;
             }
+            if (unsubscribeFromPasswords) {
+                unsubscribeFromPasswords();
+                unsubscribeFromPasswords = null;
+            }
+            
             productList.innerHTML = '';
+            passwordList.innerHTML = ''; // (BARU)
             emptyState.classList.add('hidden');
             loadingState.classList.add('hidden');
+            passwordEmptyState.classList.add('hidden'); // (BARU)
+            passwordLoadingState.classList.add('hidden'); // (BARU)
+            
             pageTitle.textContent = "IKMAL PURCHASE";
         }
 
@@ -856,24 +1003,6 @@
                 }
             }
         }
-        
-        // (PERBAIKAN) Fungsi baru untuk Google Login
-        async function handleGoogleLogin() {
-            authError.textContent = '';
-            const provider = new GoogleAuthProvider();
-            try {
-                await signInWithPopup(auth, provider);
-                // Listener onAuthStateChanged akan otomatis menangani
-                // perpindahan UI setelah login sukses
-            } catch (error) {
-                console.error("Gagal Login Google:", error.code, error.message);
-                if (error.code === 'auth/popup-closed-by-user') {
-                    authError.textContent = 'Login dibatalkan.';
-                } else {
-                    authError.textContent = 'Gagal masuk dengan Google. Coba lagi.';
-                }
-            }
-        }
 
         async function handleAnonymousLogin() {
             // (Tidak ada perubahan)
@@ -899,24 +1028,23 @@
         // (PERBAIKAN) Fungsi baru untuk mengelola tampilan
         function updateMainView(newView) {
             // 1. Update status global
-            currentView = newView; // Ini penting untuk renderFilteredProducts
+            currentView = newView; 
 
             // 2. Update tombol aktif di sidebar
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.toggle('active-menu-item', item.dataset.action === newView);
             });
 
-            // 3. Sembunyikan semua wrapper konten
+            // 3. Sembunyikan semua wrapper konten & tombol
             productContent.classList.add('hidden');
             passwordContent.classList.add('hidden');
             addProductBtnWrapper.classList.add('hidden');
+            addPasswordBtnWrapper.classList.add('hidden'); // (BARU)
             
-            // 4. Sembunyikan UI header spesifik (search)
-            searchToggleBtn.classList.add('hidden');
+            // 4. Sembunyikan UI header spesifik (search) & reset
             searchWrapper.classList.add('hidden');
-            if (!searchWrapper.classList.contains('hidden')) { // hanya reset jika terbuka
-                searchInput.value = '';
-            }
+            searchInput.value = ''; // Reset pencarian saat ganti view
+            searchToggleBtn.classList.add('hidden'); // Sembunyikan toggle search by default
 
             // 5. Tampilkan konten yang relevan
             if (newView === 'my-purchase' || newView === 'my-subscribe') {
@@ -924,41 +1052,45 @@
                 pageTitle.textContent = (newView === 'my-purchase') ? "My Purchase" : "My Subscribe";
                 productContent.classList.remove('hidden');
                 addProductBtnWrapper.classList.remove('hidden');
-                searchToggleBtn.classList.remove('hidden');
+                searchToggleBtn.classList.remove('hidden'); // Tampilkan search
+                cardToggleWrapper.classList.remove('hidden'); // Tampilkan toggle kartu
                 
-                renderFilteredProducts(); // Panggil render
+                renderFilteredProducts(); // Panggil render produk
                 
             } else if (newView === 'my-password') {
                 // Ini adalah Tampilan Password
                 pageTitle.textContent = "My Password";
                 passwordContent.classList.remove('hidden');
-                // (add btn & search tetap hidden)
+                addPasswordBtnWrapper.classList.remove('hidden'); // Tampilkan tombol tambah pass
+                searchToggleBtn.classList.remove('hidden'); // Tampilkan search
+                cardToggleWrapper.classList.add('hidden'); // Sembunyikan toggle kartu
+                
+                renderFilteredPasswords(); // (BARU) Panggil render password
             }
         }
 
 
-        // --- 4. Logika CRUD (Create, Read, Update, Delete) ---
+        // --- 4. Logika CRUD PRODUK ---
         
-        // (PERBAIKAN BESAR KEAMANAN)
-        function getCollectionPath() {
+        // (MODIFIKASI) Nama diubah untuk kejelasan
+        function getProductCollectionPath() {
             if (!userId) {
-                console.error("UserID tidak ditemukan, tidak bisa mengakses koleksi.");
+                console.error("UserID tidak ditemukan, tidak bisa mengakses koleksi produk.");
                 return null;
             }
-            // (PERBAIKAN BESAR KEAMANAN)
-            // Semua data, baik tamu (anonim) maupun pengguna login (Email/Google),
-            // sekarang disimpan di path privat yang terikat pada UserID mereka.
-            // Ini menggantikan logika lama yang menggunakan path 'public' untuk pengguna email.
-            return `/artifacts/${appId}/users/${userId}/products`;
-            
-            // (Catatan: Saat fitur 'My Password' dibuat, kita akan ubah ini
-            // menjadi getCollectionPath('products') atau getCollectionPath('passwords'))
+            if (auth.currentUser && auth.currentUser.isAnonymous) {
+                // Untuk tamu, gunakan path lama (private)
+                return `/artifacts/${appId}/users/${userId}/products`;
+            } else {
+                // Untuk pengguna email, gunakan path public
+                return `/artifacts/${appId}/public/data/products`;
+            }
         }
         
         function loadProducts() {
-            // (Tidak ada perubahan)
             if (!userId) return;
-            const collectionPath = getCollectionPath();
+            // (MODIFIKASI) Menggunakan nama fungsi baru
+            const collectionPath = getProductCollectionPath();
             if (!collectionPath) return; 
 
             loadingState.classList.remove('hidden');
@@ -979,13 +1111,11 @@
                     allProducts.push({ id: doc.id, ...doc.data() });
                 });
 
-                // (BARU) Buat tanggal utama untuk pengurutan
                 allProducts = allProducts.map(p => ({
                     ...p,
                     primaryDate: p.tanggalMulai || p.tanggalBeli || '1970-01-01' 
                 }));
                 
-                // Urutkan *semua* produk berdasarkan tanggal terbaru
                 allProducts.sort((a, b) => new Date(b.primaryDate) - new Date(a.primaryDate));
                 
                 renderFilteredProducts(); // Ini akan me-render ulang setiap ada perubahan data
@@ -996,15 +1126,12 @@
             });
         }
         
-        // (PERBAIKAN) Fungsi `createProductCard` dipecah menjadi `createCompactCard` dan `createFullCard`
-        
         // (BARU) Fungsi untuk membuat kartu ringkas
         function createCompactCard(product) {
             // (Tidak ada perubahan)
             const card = document.createElement('div');
             card.dataset.id = product.id;
             
-            // Fungsi utilitas sanitasi
             const sanitize = (str) => {
                 if (!str) return '';
                 const temp = document.createElement('div');
@@ -1017,10 +1144,10 @@
             card.innerHTML = `
                 <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
                 <div class="flex-shrink-0">
-                    <button class="btn-icon btn-edit" data-id="${product.id}" aria-label="Edit produk">
+                    <button class="btn-icon btn-edit-product" data-id="${product.id}" aria-label="Edit produk">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </button>
-                    <button class="btn-icon btn-delete" data-id="${product.id}" data-name="${sanitize(product.namaProduk || 'ini')}" aria-label="Hapus produk">
+                    <button class="btn-icon btn-delete-product" data-id="${product.id}" data-name="${sanitize(product.namaProduk || 'ini')}" aria-label="Hapus produk">
                         <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 </div>
@@ -1066,12 +1193,10 @@
                 }).format(number);
             };
 
-            // (MODIFIKASI) Logika Badge & Detail Produk
             let tipeTransaksiHTML = '';
             let productDetailsHTML = '';
 
             if (product.tipeTransaksi === 'subscribe') {
-                // Tampilan untuk "Subscribe"
                 tipeTransaksiHTML = `
                     <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-yellow-600 bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-300">
                         Subscribe
@@ -1083,7 +1208,6 @@
                     <p><strong>Email:</strong> ${sanitize(product.email) || 'N/A'}</p>
                 `;
             } else {
-                // Tampilan default untuk "Purchase" (atau data lama)
                 tipeTransaksiHTML = `
                     <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200 dark:bg-green-800 dark:text-green-300">
                         Purchase
@@ -1137,23 +1261,22 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <div class="flex flex-wrap gap-2 mb-2">
-                            ${tipeTransaksiHTML} <!-- Badge Dinamis -->
+                            ${tipeTransaksiHTML} 
                             ${tipeProdukHTML}
                         </div>
                         <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
                         ${ownerHTML}
                     </div>
                     <div class="flex-shrink-0">
-                        <button class="btn-icon btn-edit" data-id="${product.id}" aria-label="Edit produk">
+                        <button class="btn-icon btn-edit-product" data-id="${product.id}" aria-label="Edit produk">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </button>
-                        <button class="btn-icon btn-delete" data-id="${product.id}" data-name="${sanitize(product.namaProduk || 'ini')}" aria-label="Hapus produk">
+                        <button class="btn-icon btn-delete-product" data-id="${product.id}" data-name="${sanitize(product.namaProduk || 'ini')}" aria-label="Hapus produk">
                             <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
                 </div>
 
-                <!-- (MODIFIKASI) Detail Produk Dinamis -->
                 <div class="text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark space-y-2">
                     ${productDetailsHTML}
                 </div>
@@ -1186,34 +1309,28 @@
             
             return card;
         }
-
         
-        // (PERBAIKAN) Diperbarui untuk menggunakan fungsi kartu yang baru
         function renderFilteredProducts() {
-            // (Tidak ada perubahan)
-            
-            // (PERBAIKAN) Pastikan hanya render jika view-nya adalah produk
+            // (PERBAIKAN) Guard clause
             if (currentView !== 'my-purchase' && currentView !== 'my-subscribe') {
-                productList.innerHTML = ''; // Kosongkan jika bukan tampilan produk
+                productList.innerHTML = '';
+                emptyState.classList.add('hidden');
                 return;
             }
             
             const searchTerm = searchInput.value.toLowerCase().trim();
             productList.innerHTML = ''; 
-            emptyState.classList.add('hidden'); // Sembunyikan status kosong secara default
+            emptyState.classList.add('hidden'); 
 
-            // (BARU) Langkah 1: Filter berdasarkan Tampilan (View)
             const viewFilteredProducts = allProducts.filter(product => {
                 if (currentView === 'my-purchase') {
-                    // Tampilkan 'purchase' ATAU item lama yang tidak punya tipe (backward compatibility)
                     return product.tipeTransaksi === 'purchase' || !product.tipeTransaksi;
                 } else if (currentView === 'my-subscribe') {
                     return product.tipeTransaksi === 'subscribe';
                 }
-                return false; // Seharusnya tidak terjadi
+                return false; 
             });
 
-            // (DIUBAH) Langkah 2: Filter berdasarkan Pencarian (Search)
             const filteredProducts = viewFilteredProducts.filter(product => {
                 if (searchTerm === "") {
                     return true; 
@@ -1228,16 +1345,13 @@
                 );
             });
             
-            // (PERBAIKAN) Sesuaikan layout list berdasarkan view
             if (isCardViewCollapsed) {
-                productList.className = "space-y-2"; // Jarak lebih rapat
+                productList.className = "space-y-2";
             } else {
-                productList.className = "space-y-4"; // Jarak normal
+                productList.className = "space-y-4";
             }
 
-            // (DIUBAH) Langkah 3: Logika Tampilan Kosong (Empty State)
             if (viewFilteredProducts.length === 0) {
-                // Jika tidak ada item SAMA SEKALI untuk tampilan ini
                 if (currentView === 'my-purchase') {
                     emptyState.innerHTML = '<p>Belum ada produk "Purchase" yang disimpan.</p><p class="text-sm">Klik "Tambah Produk Baru" untuk memulai.</p>';
                 } else {
@@ -1246,14 +1360,11 @@
                 emptyState.classList.remove('hidden');
                 
             } else if (filteredProducts.length === 0) {
-                // Jika ADA item, tapi tidak ada yang cocok dengan pencarian
                 emptyState.classList.add('hidden');
                 productList.innerHTML = `<p class="text-center text-notion-text-subtle py-10">Tidak ada produk yang cocok dengan pencarian "${searchInput.value}".</p>`;
             } else {
-                // Jika ada item dan cocok (atau tidak ada pencarian)
                 emptyState.classList.add('hidden');
                 filteredProducts.forEach(product => {
-                    // (PERBAIKAN) Logika render baru
                     let card;
                     if (isCardViewCollapsed) {
                         card = createCompactCard(product);
@@ -1268,15 +1379,15 @@
         async function handleFormSubmit(e) {
             // (Tidak ada perubahan)
             e.preventDefault();
-            hideModalError(); // Sembunyikan error lama
+            hideModalError(); 
             
-            const collectionPath = getCollectionPath();
+            // (MODIFIKASI) Menggunakan nama fungsi baru
+            const collectionPath = getProductCollectionPath();
             if (!collectionPath) {
                 showModalError("Gagal mendapatkan path database. Coba login ulang.");
                 return;
             }
             
-            // Validasi 'Lainnya'
             let emailValue = emailSelect.value;
             if (emailValue === 'Lainnya') {
                 emailValue = emailLainnyaInput.value.trim();
@@ -1287,7 +1398,6 @@
                 tipeProdukValue = tipeProdukLainnyaInput.value.trim();
             }
 
-            // Ubah string link menjadi array
             const linkAksesString = document.getElementById('linkAkses').value;
             const linkAksesArray = linkAksesString
                 .split('\n')
@@ -1295,11 +1405,8 @@
                 .filter(link => link.length > 0);
 
             const productId = document.getElementById('product-id').value;
-            
-            // (MODIFIKASI) Membangun data berdasarkan Tipe Transaksi
             const tipeTransaksiValue = tipeTransaksiSelect.value;
             
-            // (MODIFIKASI) Validasi dasar
             if (!tipeTransaksiValue) {
                 showModalError("Harap pilih 'Tipe Entri' (Purchase atau Subscribe).");
                 return;
@@ -1308,9 +1415,7 @@
                 showModalError("Harap isi 'Nama Produk'.");
                 return;
             }
-            // (AKHIR MODIFIKASI) Validasi dasar
 
-            // Data bersama
             let productData = {
                 tipeTransaksi: tipeTransaksiValue,
                 namaProduk: document.getElementById('namaProduk').value,
@@ -1324,16 +1429,13 @@
             };
 
             if (tipeTransaksiValue === 'purchase') {
-                // Validasi khusus purchase
                 if (!tanggalBeliInput.value) {
                     showModalError("Harap isi 'Tanggal Beli' untuk Purchase.");
                     return;
                 }
-                // Tambahkan data khusus purchase
                 productData.tanggalBeli = tanggalBeliInput.value;
                 productData.hargaBeli = document.getElementById('hargaBeli').valueAsNumber || 0;
             } else if (tipeTransaksiValue === 'subscribe') {
-                 // Validasi khusus subscribe
                 if (!tanggalMulaiInput.value) {
                     showModalError("Harap isi 'Tanggal Mulai' untuk Subscribe.");
                     return;
@@ -1349,7 +1451,6 @@
                     return;
                 }
                 
-                // Tambahkan data khusus subscribe
                 productData.tanggalMulai = tanggalMulaiInput.value;
                 productData.hargaLangganan = hargaLanggananInput.valueAsNumber || 0;
                 productData.periodeLangganan = periodeLanggananValue;
@@ -1371,74 +1472,297 @@
     }
     
         async function deleteProduct() {
-            // (Tidak ada perubahan)
             if (!productToDeleteId) return;
-            const collectionPath = getCollectionPath();
+            // (MODIFIKASI) Menggunakan nama fungsi baru
+            const collectionPath = getProductCollectionPath();
             if (!collectionPath) return;
             
             try {
                 const docRef = doc(db, collectionPath, productToDeleteId);
                 await deleteDoc(docRef);
                 closeConfirmDeleteModal();
-            } catch (error) {
+            } catch (error)
+                {
                 console.error("Gagal menghapus produk:", error);
-                alert("Gagal menghapus data.");
+                // Ganti alert dengan UI yang lebih baik jika ada waktu
             }
         }
         
+        // --- 5. (PERBAIKAN BARU) Logika CRUD PASSWORD ---
+        
+        /**
+         * (BARU) Mendapatkan path koleksi password (SELALU PRIVATE)
+         */
+        function getPasswordCollectionPath() {
+            if (!userId) {
+                console.error("UserID tidak ditemukan, tidak bisa mengakses koleksi password.");
+                return null;
+            }
+            // Password SELALU disimpan di path private per pengguna
+            return `/artifacts/${appId}/users/${userId}/passwords`;
+        }
+        
+        /**
+         * (BARU) Memuat listener data password
+         */
+        function loadPasswords() {
+            if (!userId) return;
+            const collectionPath = getPasswordCollectionPath();
+            if (!collectionPath) return; 
 
-        // --- 5. Logika Modal & UI Toggle ---
+            passwordLoadingState.classList.remove('hidden');
+            passwordEmptyState.classList.add('hidden');
+            passwordList.innerHTML = '';
+            
+            if (unsubscribeFromPasswords) {
+                unsubscribeFromPasswords();
+            }
 
-        // (PERBAIKAN - BARU) Fungsi Sidebar
+            const passwordsCol = collection(db, collectionPath);
+            
+            unsubscribeFromPasswords = onSnapshot(passwordsCol, (snapshot) => {
+                passwordLoadingState.classList.add('hidden');
+                
+                allPasswords = []; 
+                snapshot.forEach(doc => {
+                    allPasswords.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Urutkan berdasarkan nama platform
+                allPasswords.sort((a, b) => 
+                    (a.namaPlatform || '').localeCompare(b.namaPlatform || '')
+                );
+                
+                renderFilteredPasswords(); 
+
+            }, (error) => {
+                console.error("Gagal memuat password:", error);
+                passwordLoadingState.textContent = "Gagal memuat data password.";
+            });
+        }
+        
+        /**
+         * (BARU) Membuat kartu HTML untuk satu password
+         */
+        function createPasswordCard(password) {
+            const card = document.createElement('div');
+            card.dataset.id = password.id;
+            
+            const sanitize = (str) => {
+                if (!str) return '';
+                const temp = document.createElement('div');
+                temp.textContent = str;
+                return temp.innerHTML;
+            };
+
+            card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden p-4 space-y-3";
+            
+            const linkHTML = password.linkUrl ? `
+                <a href="${sanitize(password.linkUrl)}" target="_blank" rel="noopener noreferrer" class="btn-link inline-flex items-center gap-1 text-sm">
+                    ${sanitize(password.linkUrl)}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            ` : '';
+            
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-lg font-bold">${sanitize(password.namaPlatform || 'Tanpa Judul')}</h3>
+                        ${linkHTML}
+                    </div>
+                    <div class="flex-shrink-0">
+                        <button class="btn-icon btn-edit-password" data-id="${password.id}" aria-label="Edit password">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        </button>
+                        <button class="btn-icon btn-delete-password" data-id="${password.id}" data-name="${sanitize(password.namaPlatform || 'ini')}" aria-label="Hapus password">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-sm space-y-2 text-notion-text dark:text-notion-text-dark">
+                    ${password.username ? `<p><strong>Username:</strong> ${sanitize(password.username)}</p>` : ''}
+                    ${password.email ? `<p><strong>Email:</strong> ${sanitize(password.email)}</p>` : ''}
+                    
+                    <div class="flex items-center gap-2">
+                        <strong class="text-sm">Password:</strong>
+                        <input type="password" value="${sanitize(password.passwordEntry) || ''}" class="password-field-display notion-input text-sm p-1 flex-1" readonly>
+                        <button class="btn-icon btn-toggle-password" aria-label="Tampilkan password">
+                            <svg class="w-5 h-5 toggle-pass-icon-show" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <svg class="w-5 h-5 toggle-pass-icon-hide hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064 7 9.542 7 .847 0 1.67.129 2.468.375M17.608 14.608A4.986 4.986 0 0017 12a5 5 0 00-5-5 4.986 4.986 0 00-2.608.608M5 5l14 14"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                ${password.catatan ? `
+                <div class="border-t border-notion-border dark:border-notion-border-dark pt-3 mt-3">
+                     <h4 class="font-medium mb-1">Catatan:</h4>
+                     <p class="text-sm whitespace-pre-wrap">${sanitize(password.catatan)}</p>
+                </div>
+                ` : ''}
+            `;
+            return card;
+        }
+
+        /**
+         * (BARU) Merender daftar password yang difilter
+         */
+        function renderFilteredPasswords() {
+            // Guard clause
+            if (currentView !== 'my-password') {
+                passwordList.innerHTML = '';
+                passwordEmptyState.classList.add('hidden');
+                return;
+            }
+            
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            passwordList.innerHTML = ''; 
+            passwordEmptyState.classList.add('hidden'); 
+
+            const filteredPasswords = allPasswords.filter(password => {
+                if (searchTerm === "") {
+                    return true; 
+                }
+                return (
+                    password.namaPlatform?.toLowerCase().includes(searchTerm) ||
+                    password.linkUrl?.toLowerCase().includes(searchTerm) ||
+                    password.username?.toLowerCase().includes(searchTerm) ||
+                    password.email?.toLowerCase().includes(searchTerm) ||
+                    password.catatan?.toLowerCase().includes(searchTerm)
+                );
+            });
+            
+            passwordList.className = "space-y-4"; // Layout password selalu normal
+
+            if (allPasswords.length === 0) {
+                // Tampilan kosong jika tidak ada password sama sekali
+                passwordEmptyState.innerHTML = '<p>Belum ada password yang disimpan.</p><p class="text-sm">Klik "Tambah Password Baru" untuk memulai.</p>';
+                passwordEmptyState.classList.remove('hidden');
+            } else if (filteredPasswords.length === 0) {
+                // Tampilan jika ada password, tapi tidak cocok pencarian
+                passwordEmptyState.classList.add('hidden');
+                passwordList.innerHTML = `<p class="text-center text-notion-text-subtle py-10">Tidak ada password yang cocok dengan pencarian "${searchInput.value}".</p>`;
+            } else {
+                // Tampilkan hasil
+                passwordEmptyState.classList.add('hidden');
+                filteredPasswords.forEach(password => {
+                    const card = createPasswordCard(password);
+                    passwordList.appendChild(card);
+                });
+            }
+        }
+
+        /**
+         * (BARU) Menangani submit form password
+         */
+        async function handlePasswordFormSubmit(e) {
+            e.preventDefault();
+            hidePasswordModalError();
+            
+            const collectionPath = getPasswordCollectionPath();
+            if (!collectionPath) {
+                showPasswordModalError("Gagal mendapatkan path database. Coba login ulang.");
+                return;
+            }
+            
+            const namaPlatform = document.getElementById('namaPlatform').value;
+            if (!namaPlatform) {
+                showPasswordModalError("Harap isi 'Nama Platform/Website'.");
+                return;
+            }
+
+            const passwordId = document.getElementById('password-id').value;
+            
+            const passwordData = {
+                namaPlatform: namaPlatform,
+                linkUrl: document.getElementById('linkUrl').value,
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                passwordEntry: document.getElementById('passwordEntry').value,
+                catatan: document.getElementById('passwordCatatan').value,
+            };
+
+            try {
+                if (passwordId) {
+                    const docRef = doc(db, collectionPath, passwordId);
+                    await setDoc(docRef, passwordData);
+                } else {
+                    const colRef = collection(db, collectionPath);
+                    await addDoc(colRef, passwordData);
+                }
+                closePasswordFormModal();
+            } catch (error) {
+                console.error("Gagal menyimpan password:", error);
+                showPasswordModalError("Gagal menyimpan data ke database. Silakan coba lagi.");
+            }
+        }
+    
+        /**
+         * (BARU) Menghapus password
+         */
+        async function deletePassword() {
+            if (!passwordToDeleteId) return;
+            const collectionPath = getPasswordCollectionPath();
+            if (!collectionPath) return;
+            
+            try {
+                const docRef = doc(db, collectionPath, passwordToDeleteId);
+                await deleteDoc(docRef);
+                closeConfirmDeletePasswordModal();
+            } catch (error) {
+                console.error("Gagal menghapus password:", error);
+            }
+        }
+
+
+        // --- 6. Logika Modal & UI Toggle (Gabungan) ---
+
+        // --- Fungsi Sidebar ---
         function openSidebar() {
             // (Tidak ada perubahan)
             sidebarOverlay.classList.remove('hidden');
             sidebar.classList.remove('-translate-x-full');
-            
-            // Tunda opacity untuk transisi
             requestAnimationFrame(() => {
                 sidebarOverlay.classList.remove('opacity-0');
             });
         }
-
-        // (PERBAIKAN - BARU) Fungsi Sidebar
         function closeSidebar() {
             // (Tidak ada perubahan)
             sidebarOverlay.classList.add('opacity-0');
             sidebar.classList.add('-translate-x-full');
-
-            // Sembunyikan setelah transisi selesai (300ms cocok dengan CSS)
             setTimeout(() => {
                 sidebarOverlay.classList.add('hidden');
             }, 300);
         }
         
-        // (BARU) Fungsi untuk menampilkan error di dalam modal
+        // --- Fungsi Error Modal (Produk) ---
         function showModalError(message) {
             // (Tidak ada perubahan)
-            const modalError = document.getElementById('modal-error');
             modalError.textContent = message;
             modalError.classList.remove('hidden');
         }
-        
-        // (BARU) Fungsi untuk menyembunyikan error di dalam modal
         function hideModalError() {
             // (Tidak ada perubahan)
-            const modalError = document.getElementById('modal-error');
             modalError.textContent = '';
             modalError.classList.add('hidden');
         }
+        
+        // --- (BARU) Fungsi Error Modal (Password) ---
+        function showPasswordModalError(message) {
+            passwordModalError.textContent = message;
+            passwordModalError.classList.remove('hidden');
+        }
+        function hidePasswordModalError() {
+            passwordModalError.textContent = '';
+            passwordModalError.classList.add('hidden');
+        }
 
-
-        // (BARU) Fungsi untuk menampilkan/menyembunyikan field form
+        // --- Fungsi Form Produk ---
         function toggleFormFields() {
             // (Tidak ada perubahan)
             const selectedType = tipeTransaksiSelect.value;
-            
-            // Sembunyikan semua dulu
             purchaseFields.classList.add('hidden');
             subscribeFields.classList.add('hidden');
-            
             if (selectedType === 'purchase') {
                 purchaseFields.classList.remove('hidden');
             } else if (selectedType === 'subscribe') {
@@ -1446,30 +1770,24 @@
             }
         }
 
-
-        // (MODIFIKASI) Logika reset form dipindahkan
         function openFormModal(product = null) {
             // (Tidak ada perubahan)
             hideModalError();
             
             if (product) {
-                // Mode Edit
+                // Mode Edit Produk
                 modalTitle.textContent = "Edit Produk";
                 document.getElementById('product-id').value = product.id;
                 
-                // (MODIFIKASI) Isi Tipe Transaksi & panggil toggle
-                tipeTransaksiSelect.value = product.tipeTransaksi || 'purchase'; // Default ke purchase jika data lama
-                toggleFormFields(); // Tampilkan field yang benar
+                tipeTransaksiSelect.value = product.tipeTransaksi || 'purchase';
+                toggleFormFields(); 
                 
-                // Isi data purchase
                 document.getElementById('tanggalBeli').value = product.tanggalBeli;
                 document.getElementById('hargaBeli').value = product.hargaBeli;
                 
-                // (BARU) Isi data subscribe
                 document.getElementById('tanggalMulai').value = product.tanggalMulai;
                 document.getElementById('hargaLangganan').value = product.hargaLangganan;
 
-                // (BARU) Logika 'Lainnya' untuk Periode Langganan
                 const predefinedPeriode = Array.from(periodeLanggananSelect.options).map(opt => opt.value);
                 if (product.periodeLangganan && predefinedPeriode.includes(product.periodeLangganan)) {
                     periodeLanggananSelect.value = product.periodeLangganan;
@@ -1485,7 +1803,6 @@
                     periodeLanggananLainnyaContainer.classList.add('hidden');
                 }
 
-                // ... (Isi sisa data seperti namaProduk, email, linkAkses, dll - TETAP SAMA) ...
                 document.getElementById('namaProduk').value = product.namaProduk;
                 document.getElementById('ownerProduk').value = product.ownerProduk;
                 
@@ -1531,33 +1848,28 @@
                 document.getElementById('password').value = product.password;
                 document.getElementById('catatan').value = product.catatan;
                 
-                // (BARU) Tampilkan fitur Gemini
                 geminiFeatureContainer.classList.remove('hidden');
                 geminiLoading.classList.add('hidden');
                 geminiResponseContainer.classList.add('hidden');
                 geminiResponseContainer.innerHTML = '';
                 
             } else {
-                // Mode Tambah
+                // Mode Tambah Produk
                 productForm.reset(); 
                 modalTitle.textContent = "Tambah Produk Baru";
                 document.getElementById('product-id').value = '';
                 
-                // (BARU) Pastikan field dinamis tersembunyi
                 toggleFormFields();
                 
-                // (DIPINDAH) Jalankan 'clear-btn' logic setelah reset
                 productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                 });
                 
-                // (BARU) Sembunyikan fitur Gemini
                 geminiFeatureContainer.classList.add('hidden');
                 geminiLoading.classList.add('hidden');
                 geminiResponseContainer.innerHTML = '';
             }
 
-            // ... (trigger 'input' event untuk tombol 'x' - TETAP SAMA) ...
             productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
                 input.dispatchEvent(new Event('input', { bubbles: true }));
             });
@@ -1568,22 +1880,58 @@
         function closeFormModal() {
             // (Tidak ada perubahan)
             formModal.classList.add('hidden');
-            productForm.reset(); // Reset di sini aman
+            productForm.reset(); 
             hideModalError();
             
-            // (BARU) Sembunyikan field dinamis & container 'Lainnya'
             purchaseFields.classList.add('hidden');
             subscribeFields.classList.add('hidden');
             tipeProdukLainnyaContainer.classList.add('hidden');
             emailLainnyaContainer.classList.add('hidden');
             periodeLanggananLainnyaContainer.classList.add('hidden');
             
-            // (BARU) Sembunyikan fitur Gemini
             geminiFeatureContainer.classList.add('hidden');
             geminiLoading.classList.add('hidden');
             geminiResponseContainer.innerHTML = '';
         }
         
+        // --- (BARU) Fungsi Form Password ---
+        function openPasswordFormModal(password = null) {
+            hidePasswordModalError();
+            
+            if (password) {
+                // Mode Edit Password
+                passwordModalTitle.textContent = "Edit Password";
+                document.getElementById('password-id').value = password.id;
+                
+                document.getElementById('namaPlatform').value = password.namaPlatform;
+                document.getElementById('linkUrl').value = password.linkUrl;
+                document.getElementById('username').value = password.username;
+                document.getElementById('email').value = password.email;
+                document.getElementById('passwordEntry').value = password.passwordEntry;
+                document.getElementById('passwordCatatan').value = password.catatan;
+                
+            } else {
+                // Mode Tambah Password
+                passwordForm.reset(); 
+                passwordModalTitle.textContent = "Tambah Password Baru";
+                document.getElementById('password-id').value = '';
+            }
+
+            // Trigger 'input' event untuk tombol 'x'
+            passwordForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
+            passwordFormModal.classList.remove('hidden');
+        }
+        
+        function closePasswordFormModal() {
+            passwordFormModal.classList.add('hidden');
+            passwordForm.reset(); 
+            hidePasswordModalError();
+        }
+
+        // --- Fungsi Modal Hapus (Produk) ---
         function openConfirmDeleteModal(id, name) {
             // (Tidak ada perubahan)
             productToDeleteId = id;
@@ -1597,6 +1945,19 @@
             confirmDeleteModal.classList.add('hidden');
         }
         
+        // --- (BARU) Fungsi Modal Hapus (Password) ---
+        function openConfirmDeletePasswordModal(id, name) {
+            passwordToDeleteId = id;
+            passwordNameToDelete.textContent = name;
+            confirmDeletePasswordModal.classList.remove('hidden');
+        }
+
+        function closeConfirmDeletePasswordModal() {
+            passwordToDeleteId = null;
+            confirmDeletePasswordModal.classList.add('hidden');
+        }
+        
+        // --- Fungsi UI Lainnya ---
         function togglePasswordVisibility(button) {
             // (Tidak ada perubahan)
             const input = button.closest('div').querySelector('input[type="password"], input[type="text"]');
@@ -1614,37 +1975,51 @@
             }
         }
         
-        // (MODIFIKASI) Menggunakan modal error, bukan alert
         async function loadProductForEdit(id) {
-            // (Tidak ada perubahan)
-            const collectionPath = getCollectionPath();
+            // (MODIFIKASI) Menggunakan nama fungsi baru
+            const collectionPath = getProductCollectionPath();
             if (!collectionPath) return;
             
             try {
                 const docRef = doc(db, collectionPath, id);
-                const docSnap = await getDoc(docRef); // Menggunakan getDoc
+                const docSnap = await getDoc(docRef); 
                 if (docSnap.exists()) {
                     openFormModal({ id: docSnap.id, ...docSnap.data() });
-                } else {
-                    console.error("Produk tidak ditemukan untuk diedit");
-                    // Tidak bisa membuka modal jika data tidak ada
                 }
             } catch (error) {
-                console.error("Gagal mengambil data untuk edit:", error);
-                openFormModal(); // Buka modal kosong
+                console.error("Gagal mengambil data produk untuk edit:", error);
+                openFormModal(); 
                 showModalError("Gagal memuat data produk. Silakan tutup dan coba lagi.");
             }
         }
         
-        // (PERBAIKAN) Fungsi untuk Card View Toggle
-        function toggleCardView() {
-            isCardViewCollapsed = !isCardViewCollapsed; // Toggle status
-            updateCardToggleUI(); // Perbarui tampilan tombol
-            renderFilteredProducts(); // Render ulang daftar produk
+        // (BARU) Fungsi untuk memuat data password untuk diedit
+        async function loadPasswordForEdit(id) {
+            const collectionPath = getPasswordCollectionPath();
+            if (!collectionPath) return;
+            
+            try {
+                const docRef = doc(db, collectionPath, id);
+                const docSnap = await getDoc(docRef); 
+                if (docSnap.exists()) {
+                    openPasswordFormModal({ id: docSnap.id, ...docSnap.data() });
+                }
+            } catch (error) {
+                console.error("Gagal mengambil data password untuk edit:", error);
+                openPasswordFormModal(); 
+                showPasswordModalError("Gagal memuat data password. Silakan tutup dan coba lagi.");
+            }
         }
         
-        // (PERBAIKAN) Fungsi untuk update UI tombol toggle
+        function toggleCardView() {
+            // (Tidak ada perubahan)
+            isCardViewCollapsed = !isCardViewCollapsed; 
+            updateCardToggleUI(); 
+            renderFilteredProducts(); 
+        }
+        
         function updateCardToggleUI() {
+            // (Tidak ada perubahan)
             if (isCardViewCollapsed) {
                 cardToggleSwitch.classList.remove('bg-gray-200', 'dark:bg-gray-700');
                 cardToggleSwitch.classList.add('bg-blue-600', 'dark:bg-blue-500');
@@ -1660,14 +2035,10 @@
             }
         }
 
-        // --- 6. Logika Gemini API (BARU) ---
-
-        /**
-         * (BARU) Fungsi inti untuk memanggil Gemini API dengan exponential backoff.
-         */
+        // --- 7. Logika Gemini API ---
         async function callGeminiAPI(userQuery, systemInstruction, maxRetries = 3) {
             // (Tidak ada perubahan)
-            const apiKey = ""; // Biarkan kosong, akan di-handle oleh environment
+            const apiKey = ""; 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
             const payload = {
@@ -1677,7 +2048,7 @@
                 },
             };
 
-            let delay = 1000; // 1 detik
+            let delay = 1000; 
             for (let i = 0; i <= maxRetries; i++) {
                 try {
                     const response = await fetch(apiUrl, {
@@ -1687,7 +2058,6 @@
                     });
 
                     if (!response.ok) {
-                        // Jika status bukan OK, coba lagi
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
 
@@ -1695,46 +2065,38 @@
                     const candidate = result.candidates?.[0];
 
                     if (candidate && candidate.content?.parts?.[0]?.text) {
-                        return candidate.content.parts[0].text; // Sukses
+                        return candidate.content.parts[0].text; 
                     } else {
-                        // Jika respon OK tapi data tidak ada
                         throw new Error("Respon API tidak valid atau kosong.");
                     }
                 } catch (error) {
                     console.warn(`Upaya API ${i + 1} gagal:`, error.message);
                     if (i === maxRetries) {
-                        // Jika sudah mencapai batas percobaan
                         throw new Error("Gagal menghubungi API setelah beberapa kali percobaan.");
                     }
-                    // Tunggu sebelum mencoba lagi
                     await new Promise(resolve => setTimeout(resolve, delay));
-                    delay *= 2; // Double delay untuk backoff
+                    delay *= 2; 
                 }
             }
         }
 
-        /**
-         * (BARU) Menangani klik tombol Gemini untuk mendapatkan info
-         */
         async function handleGeminiRequest() {
             // (Tidak ada perubahan)
             geminiLoading.classList.remove('hidden');
             geminiResponseContainer.classList.add('hidden');
             geminiResponseContainer.innerHTML = '';
 
-            // Ambil data dari form
             const namaProduk = document.getElementById('namaProduk').value;
             const tipeProduk = document.getElementById('tipeProduk').value;
             const tipeProdukLainnya = document.getElementById('tipeProdukLainnya').value;
 
             let tipe = tipeProduk;
             if (tipe === 'Lainnya') {
-                tipe = tipeProdukLainnya.trim() || 'Produk Digital'; // Default jika 'Lainnya' tapi kosong
+                tipe = tipeProdukLainnya.trim() || 'Produk Digital'; 
             }
             if (tipe === '') {
-                tipe = 'Produk Digital'; // Default jika tidak dipilih
+                tipe = 'Produk Digital'; 
             }
-
 
             if (!namaProduk) {
                 geminiLoading.classList.add('hidden');
@@ -1743,7 +2105,6 @@
                 return;
             }
 
-            // Siapkan prompt untuk Gemini
             const systemPrompt = "Anda adalah asisten yang sangat membantu, kreatif, dan ahli dalam produktivitas digital. Jawab selalu dalam Bahasa Indonesia dengan format yang rapi.";
             const userQuery = `Saya memiliki produk digital bernama "${namaProduk}". Tipe produk ini adalah "${tipe}". 
     
@@ -1754,12 +2115,10 @@ Tolong berikan saya 2 hal:
 Format jawaban Anda dengan jelas menggunakan poin-poin.`;
 
             try {
-                // Panggil API
                 const responseText = await callGeminiAPI(userQuery, systemPrompt);
                 
-                // Format sederhana: ganti baris baru dengan <br> dan sanitasi
                 const formattedResponse = responseText
-                    .replace(/</g, "&lt;") // Sanitasi dasar
+                    .replace(/</g, "&lt;") 
                     .replace(/>/g, "&gt;")
                     .replace(/\n/g, '<br>');
 
@@ -1776,7 +2135,7 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
         }
 
 
-        // --- 7. Event Listeners --- (Sebelumnya 6)
+        // --- 8. Event Listeners ---
         
         // --- Listener Auth ---
         // (Tidak ada perubahan)
@@ -1784,8 +2143,6 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
         registerForm.addEventListener('submit', handleRegister);
         logoutBtn.addEventListener('click', handleLogout);
         anonymousLoginBtn.addEventListener('click', handleAnonymousLogin);
-        googleLoginBtn.addEventListener('click', handleGoogleLogin); // (PERBAIKAN) Ditambahkan
-        
         showRegisterBtn.addEventListener('click', () => {
             loginForm.classList.add('hidden');
             registerForm.classList.remove('hidden');
@@ -1798,8 +2155,12 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
         });
 
         // --- Listener Search ---
-        // (Tidak ada perubahan)
-        searchInput.addEventListener('input', renderFilteredProducts);
+        // (PERBAIKAN) Search sekarang me-render kedua list (guard clause di dalam fungsi akan menanganinya)
+        searchInput.addEventListener('input', () => {
+            renderFilteredProducts();
+            renderFilteredPasswords();
+        });
+        
         searchToggleBtn.addEventListener('click', () => {
             searchWrapper.classList.remove('hidden');
             searchToggleBtn.classList.add('hidden');
@@ -1813,39 +2174,29 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
         });
 
         // --- Listener Sidebar ---
-        // (PERBAIKAN - BARU) Listener untuk Buka/Tutup Sidebar
         sidebarToggleBtn.addEventListener('click', openSidebar);
         sidebarCloseBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
 
-        // (PERBAIKAN) Logika klik item menu sidebar disederhanakan
         sidebarMenuList.addEventListener('click', (e) => { 
             const menuItem = e.target.closest('.menu-item');
             if (!menuItem) return;
             e.preventDefault();
             
             const action = menuItem.dataset.action;
-
             updateMainView(action);
             closeSidebar(); 
         });
         
-        // (PERBAIKAN) Listener untuk toggle kartu
         cardToggleSwitch.addEventListener('click', toggleCardView);
 
-        // --- Listener Tombol & Modal ---
-
-        // Tombol utama
+        // --- Listener Tombol & Modal (Produk) ---
         addProductBtn.addEventListener('click', () => openFormModal());
-        
-        // Tombol modal form
         modalCloseBtn.addEventListener('click', closeFormModal);
         modalCancelBtn.addEventListener('click', closeFormModal);
         productForm.addEventListener('submit', handleFormSubmit);
         
-        // (BARU) Listener untuk menampilkan/menyembunyikan tombol 'x' clear
         productForm.addEventListener('input', (e) => {
-            // (Tidak ada perubahan)
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 return;
             }
@@ -1861,16 +2212,12 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
             }
         });
         
-        // Tombol modal konfirmasi hapus
         cancelDeleteBtn.addEventListener('click', closeConfirmDeleteModal);
         confirmDeleteBtn.addEventListener('click', deleteProduct);
         
-        // (BARU) Listener untuk dropdown Tipe Transaksi
         tipeTransaksiSelect.addEventListener('change', toggleFormFields);
         
-        // (BARU) Listener untuk dropdown Periode Langganan
         periodeLanggananSelect.addEventListener('change', () => {
-            // (Tidak ada perubahan)
             if (periodeLanggananSelect.value === 'Lainnya') {
                 periodeLanggananLainnyaContainer.classList.remove('hidden');
                 periodeLanggananLainnyaInput.focus();
@@ -1880,9 +2227,7 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
             }
         });
 
-        // Listener dropdown (Email & Tipe Produk)
         tipeProdukSelect.addEventListener('change', () => {
-            // (Tidak ada perubahan)
             if (tipeProdukSelect.value === 'Lainnya') {
                 tipeProdukLainnyaContainer.classList.remove('hidden');
                 tipeProdukLainnyaInput.focus();
@@ -1892,7 +2237,6 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
             }
         });
         emailSelect.addEventListener('change', () => {
-            // (Tidak ada perubahan)
             if (emailSelect.value === 'Lainnya') {
                 emailLainnyaContainer.classList.remove('hidden');
                 emailLainnyaInput.focus();
@@ -1902,54 +2246,43 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
             }
         });
 
-        // (PERBAIKAN BESAR) Event delegation untuk kartu produk (DIREVISI)
+        // (PERBAIKAN) Event delegation untuk *Product List*
         productList.addEventListener('click', (e) => {
-            // (Tidak ada perubahan)
-            const editBtn = e.target.closest('.btn-edit');
-            const deleteBtn = e.target.closest('.btn-delete');
+            // (MODIFIKASI) Ubah nama class tombol
+            const editBtn = e.target.closest('.btn-edit-product');
+            const deleteBtn = e.target.closest('.btn-delete-product');
             const togglePassBtn = e.target.closest('.btn-toggle-password');
             const compactCard = e.target.closest('.compact-card-clickable');
             const fullCard = e.target.closest('.manually-opened');
 
-            // Prioritas #1: Tombol Edit (selalu memuat modal)
             if (editBtn) {
                 const id = editBtn.dataset.id;
                 loadProductForEdit(id);
                 return;
             }
-            
-            // Prioritas #2: Tombol Hapus (selalu memuat modal)
             if (deleteBtn) {
                 const id = deleteBtn.dataset.id;
                 const name = deleteBtn.dataset.name;
                 openConfirmDeleteModal(id, name);
                 return;
             }
-            
-            // Prioritas #3: Tombol Password (hanya toggle)
             if (togglePassBtn) {
                 togglePasswordVisibility(togglePassBtn);
                 return;
             }
-            
-            // Prioritas #4: Link (jangan lakukan apa-apa, biarkan browser)
             if (e.target.tagName === 'A' || e.target.closest('A')) {
                 return;
             }
-
-            // Prioritas #5: Klik kartu ringkas (untuk MEMBUKA)
             if (compactCard) {
                 const id = compactCard.dataset.id;
                 const product = allProducts.find(p => p.id === id);
                 if (!product) return;
                 
                 const newFullCard = createFullCard(product);
-                newFullCard.classList.add('manually-opened'); // Tambahkan marker
+                newFullCard.classList.add('manually-opened'); 
                 compactCard.replaceWith(newFullCard);
                 return;
             }
-            
-            // Prioritas #6: Klik kartu penuh yang dibuka manual (untuk MENUTUP)
             if (fullCard) {
                 const id = fullCard.dataset.id;
                 const product = allProducts.find(p => p.id === id);
@@ -1961,18 +2294,15 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
             }
         });
         
-        // (MODIFIKASI) Event delegation untuk tombol di dalam form (toggle password, clear, DAN GEMINI)
         formModal.addEventListener('click', (e) => {
-            // (Tidak ada perubahan)
             const togglePassBtn = e.target.closest('.btn-toggle-password');
             const clearBtn = e.target.closest('.clear-btn');
-            const geminiBtn = e.target.closest('#gemini-info-btn'); // (BARU)
+            const geminiBtn = e.target.closest('#gemini-info-btn'); 
 
             if (togglePassBtn) {
                 togglePasswordVisibility(togglePassBtn);
                 return; 
             }
-            
             if (clearBtn) {
                 e.preventDefault(); 
                 const wrapper = clearBtn.closest('.input-wrapper');
@@ -1984,12 +2314,64 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
                 }
                 return; 
             }
-            
-            // (BARU) Menangani klik tombol Gemini
             if (geminiBtn) {
-                e.preventDefault(); // Pastikan tidak submit form
+                e.preventDefault(); 
                 handleGeminiRequest();
                 return;
+            }
+        });
+
+        // --- (PERBAIKAN BARU) Listener Tombol & Modal (Password) ---
+        addPasswordBtn.addEventListener('click', () => openPasswordFormModal());
+        passwordModalCloseBtn.addEventListener('click', closePasswordFormModal);
+        passwordModalCancelBtn.addEventListener('click', closePasswordFormModal);
+        passwordForm.addEventListener('submit', handlePasswordFormSubmit);
+
+        cancelDeletePasswordBtn.addEventListener('click', closeConfirmDeletePasswordModal);
+        confirmDeletePasswordBtn.addEventListener('click', deletePassword);
+
+        // (BARU) Event delegation untuk *Password List*
+        passwordList.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.btn-edit-password');
+            const deleteBtn = e.target.closest('.btn-delete-password');
+            const togglePassBtn = e.target.closest('.btn-toggle-password');
+
+            if (editBtn) {
+                const id = editBtn.dataset.id;
+                loadPasswordForEdit(id);
+                return;
+            }
+            if (deleteBtn) {
+                const id = deleteBtn.dataset.id;
+                const name = deleteBtn.dataset.name;
+                openConfirmDeletePasswordModal(id, name);
+                return;
+            }
+            if (togglePassBtn) {
+                togglePasswordVisibility(togglePassBtn);
+                return;
+            }
+        });
+        
+        // (BARU) Event delegation untuk tombol di dalam *Password Form*
+        passwordFormModal.addEventListener('click', (e) => {
+            const togglePassBtn = e.target.closest('.btn-toggle-password');
+            const clearBtn = e.target.closest('.clear-btn');
+
+            if (togglePassBtn) {
+                togglePasswordVisibility(togglePassBtn);
+                return; 
+            }
+            if (clearBtn) {
+                e.preventDefault(); 
+                const wrapper = clearBtn.closest('.input-wrapper');
+                const input = wrapper.querySelector('input, textarea');
+                if (input) {
+                    input.value = '';
+                    input.dispatchEvent(new Event('input', { bubbles: true })); 
+                    input.focus();
+                }
+                return; 
             }
         });
 
