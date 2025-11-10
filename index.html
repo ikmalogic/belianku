@@ -10,19 +10,21 @@
     <!-- Konfigurasi kustom Tailwind untuk tema Notion -->
     <script>
         tailwind.config = {
-            darkMode: 'class', // Mengaktifkan mode gelap berdasarkan class 'dark' di <html>
+            // ... (Konfigurasi Tailwind tetap sama) ...
+// (Konten konfigurasi tailwind.config yang ada di file sebelumnya)
+// Ini disembunyikan agar ringkas, tapi kode aslinya masih ada
+            darkMode: 'class', 
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Space Grotesk', 'sans-serif'], // Font standar yang bersih
+                        sans: ['Space Grotesk', 'sans-serif'], 
                     },
                     colors: {
-                        // Palet warna ala Notion
                         'notion-white': '#FFFFFF',
                         'notion-bg': '#FFFFFF',
-                        'notion-bg-dark': '#191919', // Latar belakang utama mode gelap
+                        'notion-bg-dark': '#191919', 
                         'notion-card': '#FFFFFF',
-                        'notion-card-dark': '#2F2F2F', // Latar belakang kartu/modal mode gelap
+                        'notion-card-dark': '#2F2F2F', 
                         'notion-border': '#E3E3E3',
                         'notion-border-dark': '#3F3F3F',
                         'notion-text': '#191919',
@@ -34,6 +36,7 @@
                     }
                 },
             }
+// ...
         }
     </script>
     
@@ -43,30 +46,24 @@
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
         
         body {
-            /* Transisi untuk pergantian mode gelap/terang */
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Styling untuk input ala Notion */
         .notion-input {
-            @apply w-full px-3 py-2 bg-notion-white dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-md shadow-sm placeholder-notion-text-subtle dark:placeholder-notion-text-subtle-dark focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-notion-text dark:text-notion-text-dark; /* <-- Dikembalikan ke teks terang (default) di mode gelap */
+            @apply w-full px-3 py-2 bg-notion-white dark:bg-notion-white border border-notion-border dark:border-notion-border rounded-md shadow-sm placeholder-notion-text-subtle dark:placeholder-notion-text-subtle focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-notion-text dark:text-notion-text;
         }
 
-        /* * Perbaikan untuk Bug Autofill Browser (Chrome/Edge) di Mode Gelap:
-         * Browser terkadang memaksa latar belakang input menjadi putih saat autofill.
-         * Ini membuat teks terang (default mode gelap) tidak terbaca.
-         * Aturan ini memaksa teks di dalam input yang di-autofill menjadi HITAM.
-        */
+        /* Perbaikan Bug Autofill Browser (Chrome/Edge) di Mode Gelap */
         html.dark .notion-input:-webkit-autofill,
         html.dark .notion-input:-webkit-autofill:hover,
         html.dark .notion-input:-webkit-autofill:focus,
         html.dark .notion-input:-webkit-autofill:active {
-            -webkit-text-fill-color: #191919 !important; /* Paksa warna teks jadi hitam (#notion-text) */
-            /* Kita biarkan background-nya putih (karena susah dilawan), 
-               tapi kita pastikan teksnya bisa dibaca. */
+            -webkit-text-fill-color: #191919 !important; 
+            -webkit-box-shadow: none !important;
+            box-shadow: none !important;
+            transition: background-color 9999s ease-in-out 0s;
         }
         
-        /* Styling untuk tombol */
         .btn {
             @apply px-4 py-2 rounded-md font-medium text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-notion-bg-dark;
         }
@@ -82,93 +79,237 @@
         .btn-icon {
             @apply p-2 rounded-md text-notion-text-subtle hover:bg-gray-100 dark:text-notion-text-subtle-dark dark:hover:bg-notion-card-dark;
         }
+        .btn-link {
+            @apply text-sm text-blue-600 dark:text-blue-400 hover:underline;
+        }
         
-        /* Menyembunyikan elemen */
         .hidden {
             display: none;
         }
+
+        /* === Gaya Sidebar BARU === */
+        #sidebar {
+            transition-property: transform;
+            transition-timing-function: ease-in-out;
+            transition-duration: 300ms;
+            z-index: 50; /* Di atas segalanya */
+        }
+        #sidebar-overlay {
+            transition-property: opacity;
+            transition-timing-function: ease-in-out;
+            transition-duration: 300ms;
+            z-index: 40; /* Di bawah sidebar, di atas konten */
+        }
+        
+        .menu-item {
+            @apply block w-full px-4 py-3 rounded-lg text-notion-text dark:text-notion-text-dark hover:bg-notion-border dark:hover:bg-notion-border-dark font-medium transition-colors text-left;
+        }
+        .menu-item.active-menu-item {
+            @apply bg-notion-border dark:bg-notion-border-dark font-semibold;
+        }
+
+        /* Styling Slider (DIHAPUS) */
+        /* ... 
+           ... Blok CSS untuk input[type="range"] dihapus ...
+           ... 
+        */
+        /* === Akhir Gaya Sidebar === */
     </style>
 </head>
 
-<!-- Body dengan warna latar belakang dan teks default -->
 <body class="bg-notion-bg dark:bg-notion-bg-dark text-notion-text dark:text-notion-text-dark font-sans min-h-screen">
+
+    <!-- === SIDEBAR BARU === -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 hidden"></div>
+    <nav id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-notion-card dark:bg-notion-card-dark shadow-lg transform -translate-x-full">
+        <div class="p-6 h-full flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-semibold">Menu</h2>
+                <button id="sidebar-close-btn" class="btn-icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <!-- Konten Sidebar -->
+            <ul class="flex-1 space-y-2 overflow-y-auto"> <!-- DITAMBAHKAN: overflow-y-auto -->
+                <li>
+                    <button class="menu-item active-menu-item" data-action="my-purchase">
+                        My Purchase
+                    </button>
+                </li>
+                <li>
+                    <button class="menu-item" data-action="my-subscribe">
+                        My Subscribe
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Slider Ukuran Font (DIHAPUS) -->
+            <!-- 
+            <div class="pt-4 border-t border-notion-border dark:border-notion-border-dark">
+                ... (Konten slider dihapus) ...
+            </div>
+            -->
+
+            <!-- Info Pengguna & Logout (PINDAHAN DARI HEADER) -->
+            <!-- 'mt-4' dihapus dari div di bawah ini agar posisinya pas -->
+            <div id="user-info" class="hidden text-sm pt-4 border-t border-notion-border dark:border-notion-border-dark">
+                <span id="user-email" class="text-notion-text-subtle dark:text-notion-text-subtle-dark block font-medium mb-1"></span>
+                <button id="logout-btn" class="btn-link">Keluar</button>
+            </div>
+        </div>
+    </nav>
+    <!-- === AKHIR SIDEBAR BARU === -->
 
     <!-- Kontainer Utama -->
     <div class="container mx-auto max-w-3xl p-4 md:p-8">
 
         <!-- Header -->
-        <header class="relative flex justify-center items-center mb-6">
-            <h1 class="text-2xl sm:text-3xl font-bold text-notion-text dark:text-notion-text-dark">
+        <header class="relative flex justify-between items-center mb-6">
+            <div class="flex items-center gap-2 sm:gap-4"> <!-- Wrapper BARU -->
+                <!-- Tombol Hamburger (BARU) -->
+                <button id="sidebar-toggle-btn" class="btn-icon">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <!-- H1 (Judul) dipindahkan dari sini -->
+            </div>
+
+            <!-- JUDUL DIPINDAHKAN KE SINI DAN DIPOSISIKAN SECARA ABSOLUTE -->
+            <h1 id="page-title" class="text-2xl sm:text-3xl font-bold text-notion-text dark:text-notion-text-dark absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                 IKMAL PURCHASE
             </h1>
-            <!-- Tombol Toggle Mode Gelap/Terang -->
-            <button id="theme-toggle" class="btn-icon absolute right-0" aria-label="Toggle dark mode">
-                <!-- Ikon Bulan (Mode Gelap) -->
-                <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                <!-- Ikon Matahari (Mode Terang) -->
-                <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            </button>
+
+            <div class="flex items-center gap-2">
+                <!-- === SEARCH BAR BARU === -->
+                <!-- Wrapper 'relative' sangat penting untuk 'absolute' span -->
+                <!-- (DIUBAH) 'hidden' ditambahkan secara default dan 'id' ditambahkan -->
+                <div class="relative hidden" id="search-wrapper"> 
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-notion-text-subtle dark:text-notion-text-subtle-dark z-10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                    <!-- Input dibuat 'py-1.5' (lebih tipis) dan 'w-32' (kecil) foku: 'w-48' (melebar) -->
+                    <input type="text" id="search-input" placeholder="Cari..." class="relative notion-input w-32 md:w-40 focus:w-48 transition-all duration-300 pl-10 pr-3 py-1.5 text-sm rounded-lg">
+                </div>
+                <!-- === AKHIR SEARCH BAR === -->
+
+                <!-- (BARU) Tombol Ikon Search -->
+                <button id="search-toggle-btn" class="btn-icon" aria-label="Buka pencarian">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+
+                <!-- Tombol Toggle Mode Gelap/Terang -->
+                <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark mode">
+                    <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M12 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </button>
+            </div>
         </header>
-        
-        <!-- Status Autentikasi (Dihapus)
-        <div id="auth-status" class="text-xs text-notion-text-subtle mb-4">
-            Menginisialisasi...
-        </div>
-        -->
 
-        <!-- Tombol Tambah Produk Baru -->
-        <div class="mb-6">
-            <button id="add-product-btn" class="btn-primary w-full md:w-auto flex items-center justify-center gap-2">
-                <!-- Ikon Tambah -->
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                Tambah Produk Baru
-            </button>
-        </div>
+        <!-- === KONTROL AUTENTIKASI (BARU) === -->
+        <div id="auth-container" class="max-w-md mx-auto my-10 p-6 bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm hidden">
+            
+            <!-- Form Login -->
+            <form id="login-form" class="">
+                <h2 class="text-xl font-semibold mb-4 text-center">Masuk</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="login-email" class="block text-sm font-medium mb-1">Email</label>
+                        <input type="email" id="login-email" class="notion-input" required>
+                    </div>
+                    <div>
+                        <label for="login-password" class="block text-sm font-medium mb-1">Password</label>
+                        <input type="password" id="login-password" class="notion-input" required>
+                    </div>
+                    <button type="submit" class="btn-primary w-full">Masuk</button>
+                </div>
+                <p class="text-center text-sm mt-4">
+                    Belum punya akun? <button type="button" id="show-register-btn" class="btn-link">Daftar di sini</button>
+                </p>
+            </form>
 
-        <!-- Status Loading -->
-        <div id="loading-state" class="text-center text-notion-text-subtle py-10 hidden">
-             <p>Memuat produk...</p>
-        </div>
-        
-        <!-- Status Kosong -->
-        <div id="empty-state" class="text-center text-notion-text-subtle py-10 border-2 border-dashed border-notion-border dark:border-notion-border-dark rounded-lg hidden">
-            <p>Belum ada produk digital yang disimpan.</p>
-            <p class="text-sm">Klik "Tambah Produk Baru" untuk memulai.</p>
-        </div>
+            <!-- Form Registrasi -->
+            <form id="register-form" class="hidden">
+                <h2 class="text-xl font-semibold mb-4 text-center">Daftar Akun Baru</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="register-email" class="block text-sm font-medium mb-1">Email</label>
+                        <input type="email" id="register-email" class="notion-input" required>
+                    </div>
+                    <div>
+                        <label for="register-password" class="block text-sm font-medium mb-1">Password</label>
+                        <input type="password" id="register-password" class="notion-input" minlength="6" required>
+                    </div>
+                    <button type="submit" class="btn-primary w-full">Daftar</button>
+                </div>
+                 <p class="text-center text-sm mt-4">
+                    Sudah punya akun? <button type="button" id="show-login-btn" class="btn-link">Masuk di sini</button>
+                </p>
+            </form>
 
-        <!-- Daftar Produk -->
-        <div id="product-list" class="space-y-4">
-            <!-- Kartu Produk akan dimasukkan di sini oleh JavaScript -->
+            <!-- Opsi Login Anonim -->
+            <div class="text-center mt-4 pt-4 border-t border-notion-border dark:border-notion-border-dark">
+                <button type="button" id="anonymous-login-btn" class="btn-secondary">Coba sebagai Tamu</button>
+                <p class="text-xs text-notion-text-subtle mt-2">(Data hanya tersimpan di perangkat ini)</p>
+            </div>
+
+            <!-- Pesan Error Auth -->
+            <div id="auth-error" class="text-red-600 text-sm text-center mt-4"></div>
         </div>
+        <!-- === AKHIR KONTROL AUTENTIKASI === -->
+
+
+        <!-- === KONTEN UTAMA APLIKASI (Sekarang dibungkus) === -->
+        <div id="main-content" class="hidden">
+            <!-- Tombol Tambah Produk Baru -->
+            <div class="mb-6">
+                <button id="add-product-btn" class="btn-primary w-full md:w-auto flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    Tambah Produk Baru
+                </button>
+            </div>
+
+            <!-- Status Loading -->
+            <div id="loading-state" class="text-center text-notion-text-subtle py-10 hidden">
+                <p>Memuat produk...</p>
+            </div>
+            
+            <!-- Status Kosong -->
+            <div id="empty-state" class="text-center text-notion-text-subtle py-10 border-2 border-dashed border-notion-border dark:border-notion-border-dark rounded-lg hidden">
+                <p>Belum ada produk digital yang disimpan.</p>
+                <p class="text-sm">Klik "Tambah Produk Baru" untuk memulai.</p>
+            </div>
+
+            <!-- Daftar Produk -->
+            <div id="product-list" class="space-y-4">
+                <!-- Kartu Produk akan dimasukkan di sini oleh JavaScript -->
+            </div>
+        </div>
+        <!-- === AKHIR KONTEN UTAMA APLIKASI === -->
+
 
     </div> <!-- Akhir Kontainer Utama -->
 
     <!-- Modal Form (Tambah/Edit Produk) -->
+    <!-- (Tidak ada perubahan pada modal ini, biarkan seperti di file sebelumnya) -->
     <div id="form-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 hidden">
         <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <form id="product-form" class="p-6 space-y-4">
+                <!-- ... (Konten form modal tetap sama) ... -->
                 <div class="flex justify-between items-center mb-4">
                     <h2 id="modal-title" class="text-xl font-semibold">Tambah Produk Baru</h2>
                     <button type="button" id="modal-close-btn" class="btn-icon" aria-label="Tutup modal">
-                        <!-- Ikon X (Tutup) -->
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
-                
-                <!-- ID Produk (tersembunyi) untuk mode Edit -->
                 <input type="hidden" id="product-id">
-
                 <div>
                     <label for="namaProduk" class="block text-sm font-medium mb-1">Nama Produk</label>
                     <input type="text" id="namaProduk" class="notion-input" required>
                 </div>
-
                 <div>
                     <label for="ownerProduk" class="block text-sm font-medium mb-1">Owner/Author Produk</label>
                     <input type="text" id="ownerProduk" class="notion-input" placeholder="Nama pembuat/penjual">
                 </div>
-
-                <!-- MEMASUKKAN KEMBALI KOLOM YANG HILANG -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="tanggalBeli" class="block text-sm font-medium mb-1">Tanggal Beli</label>
@@ -179,18 +320,45 @@
                         <input type="number" id="hargaBeli" class="notion-input" placeholder="Contoh: 150000">
                     </div>
                 </div>
-
                 <div>
-                    <label for="email" class="block text-sm font-medium mb-1">Email yang dipakai</label>
-                    <input type="email" id="email" class="notion-input" placeholder="email@example.com">
+                    <label for="emailSelect" class="block text-sm font-medium mb-1">Email yang dipakai</label>
+                    <select id="emailSelect" class="notion-input">
+                        <option value="">Pilih Email...</option>
+                        <option value="eunoiamahbara@gmail.com">eunoiamahbara@gmail.com</option>
+                        <option value="ikmalogic@gmail.com">ikmalogic@gmail.com</option>
+                        <option value="ikmal@fahimna.my.id">ikmal@fahimna.my.id</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                    <div id="emailLainnyaContainer" class="hidden mt-2">
+                        <input type="email" id="emailLainnyaInput" class="notion-input" placeholder="Ketik email kustom...">
+                    </div>
                 </div>
-                
                 <div>
                     <label for="linkAkses" class="block text-sm font-medium mb-1">Link Akses</label>
                     <input type="url" id="linkAkses" class="notion-input" placeholder="https://...">
                 </div>
-                <!-- AKHIR DARI KOLOM YANG DIKEMBALIKAN -->
-
+                <div>
+                    <label for="tipeProduk" class="block text-sm font-medium mb-1">Tipe Produk</label>
+                    <select id="tipeProduk" class="notion-input">
+                        <option value="">Pilih Tipe...</option>
+                        <option value="eBook">eBook</option>
+                        <option value="PDF">PDF</option>
+                        <option value="Notion">Notion</option>
+                        <option value="Kelas / Course">Kelas / Course</option>
+                        <option value="CustomGPT">CustomGPT</option>
+                        <option value="CustomGEM">CustomGEM</option>
+                        <option value="Web App">Web App</option>
+                        <option value="Group Telegram">Group Telegram</option>
+                        <option value="Group WhatsApp">Group WhatsApp</option>
+                        <option value="Webinar">Webinar</option>
+                        <option value="Rekaman Video">Rekaman Video</option>
+                        <option value="Software/ Aplikasi">Software/ Aplikasi</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                    <div id="tipeProdukLainnyaContainer" class="hidden mt-2">
+                        <input type="text" id="tipeProdukLainnya" class="notion-input" placeholder="Ketik tipe kustom...">
+                    </div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="akun" class="block text-sm font-medium mb-1">Akun/Username</label>
@@ -201,21 +369,16 @@
                         <div class="relative">
                             <input type="password" id="password" class="notion-input pr-10" placeholder="••••••••">
                             <button type="button" class="btn-toggle-password absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle" aria-label="Tampilkan password">
-                                <!-- Ikon Mata (Tampilkan) -->
                                 <svg class="w-5 h-5 toggle-pass-icon-show" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                <!-- Ikon Mata (Sembunyikan) -->
                                 <svg class="w-5 h-5 toggle-pass-icon-hide hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064 7 9.542 7 .847 0 1.67.129 2.468.375M17.608 14.608A4.986 4.986 0 0017 12a5 5 0 00-5-5 4.986 4.986 0 00-2.608.608M5 5l14 14"></path></svg>
                             </button>
                         </div>
                     </div>
                 </div>
-
                 <div>
                     <label for="catatan" class="block text-sm font-medium mb-1">Catatan Tambahan</label>
                     <textarea id="catatan" rows="3" class="notion-input" placeholder="Info lisensi, kontak support, dll."></textarea>
                 </div>
-                
-                <!-- Tombol Aksi Form -->
                 <div class="flex justify-end gap-3 pt-4">
                     <button type="button" id="modal-cancel-btn" class="btn-secondary">Batal</button>
                     <button type="submit" id="modal-save-btn" class="btn-primary">Simpan</button>
@@ -225,8 +388,10 @@
     </div>
     
     <!-- Modal Konfirmasi Hapus -->
+    <!-- (Tidak ada perubahan pada modal ini) -->
     <div id="confirm-delete-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 hidden">
-        <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-sm p-6">
+        <!-- ... (Konten modal konfirmasi hapus tetap sama) ... -->
+         <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-sm p-6">
             <h3 class="text-lg font-semibold mb-2">Hapus Produk?</h3>
             <p class="text-notion-text-subtle dark:text-notion-text-subtle-dark mb-6">Apakah Anda yakin ingin menghapus produk <strong id="product-name-to-delete"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
             <div class="flex justify-end gap-3">
@@ -244,7 +409,12 @@
             getAuth, 
             signInAnonymously, 
             signInWithCustomToken, 
-            onAuthStateChanged 
+            onAuthStateChanged,
+            // --- IMPORT BARU UNTUK AUTH EMAIL ---
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut
+            // --- AKHIR IMPORT BARU ---
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, 
@@ -256,27 +426,53 @@
             deleteDoc, 
             onSnapshot, 
             query,
-            where
+            where,
+            getDoc // Diperlukan untuk loadProductForEdit
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- 1. Inisialisasi Firebase ---
 
-        // Dapatkan App ID unik untuk platform ini (atau gunakan 'default' jika tidak ada)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        // Variabel global untuk layanan Firebase dan data
         let db, auth, userId, unsubscribeFromProducts;
-        let productToDeleteId = null; // Menyimpan ID produk yang akan dihapus
+        let allProducts = []; // (BARU) Menyimpan semua produk
+        let productToDeleteId = null;
         
-        // DOM Elements
+        // --- DOM Elements ---
         const themeToggle = document.getElementById('theme-toggle');
         const themeIconDark = document.getElementById('theme-icon-dark');
         const themeIconLight = document.getElementById('theme-icon-light');
-        // const authStatus = document.getElementById('auth-status'); // Dihapus
-        const addProductBtn = document.getElementById('add-product-btn');
+        const pageTitle = document.getElementById('page-title'); // DITAMBAHKAN
+        const productList = document.getElementById('product-list');
         const loadingState = document.getElementById('loading-state');
         const emptyState = document.getElementById('empty-state');
-        const productList = document.getElementById('product-list');
+        
+        // Elemen Konten Utama & Auth (BARU)
+        const authContainer = document.getElementById('auth-container');
+        const mainContent = document.getElementById('main-content');
+        const userInfo = document.getElementById('user-info');
+        const userEmail = document.getElementById('user-email');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Elemen Form Auth (BARU)
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const showRegisterBtn = document.getElementById('show-register-btn');
+        const showLoginBtn = document.getElementById('show-login-btn');
+        const anonymousLoginBtn = document.getElementById('anonymous-login-btn');
+        const authError = document.getElementById('auth-error');
+
+        // Elemen Sidebar (BARU)
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+        const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+        const searchInput = document.getElementById('search-input'); // (BARU)
+        const searchToggleBtn = document.getElementById('search-toggle-btn'); // (BARU)
+        const searchWrapper = document.getElementById('search-wrapper'); // (BARU)
+        // const fontSizeSlider = document.getElementById('font-size-slider'); // DIHAPUS
+
+        // Elemen Tombol Tambah Produk
+        const addProductBtn = document.getElementById('add-product-btn');
         
         // Elemen Modal Form
         const formModal = document.getElementById('form-modal');
@@ -291,26 +487,24 @@
         const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
         const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
 
+        // Elemen Form Kustom
+        const tipeProdukSelect = document.getElementById('tipeProduk');
+        const tipeProdukLainnyaContainer = document.getElementById('tipeProdukLainnyaContainer');
+        const tipeProdukLainnyaInput = document.getElementById('tipeProdukLainnya');
+        const emailSelect = document.getElementById('emailSelect');
+        const emailLainnyaContainer = document.getElementById('emailLainnyaContainer');
+        const emailLainnyaInput = document.getElementById('emailLainnyaInput');
+
         
         // --- FUNGSI UTAMA APLIKASI ---
         
-        // Fungsi untuk memulai aplikasi
         async function initializeAppCore() {
-            // Aktifkan log Firebase untuk debugging
             setLogLevel('Debug');
-
-            // --- PENTING UNTUK DEPLOYMENT EKSTERNAL ---
-            // Kode ini secara otomatis menangani konfigurasi di platform ini.
-            // JIKA ANDA HOSTING SENDIRI, Anda HARUS mengganti blok 'else' di bawah
-            // dengan objek 'firebaseConfig' dari proyek Firebase Anda.
             let firebaseConfig;
             if (typeof __firebase_config !== 'undefined' && __firebase_config !== "") {
                 firebaseConfig = JSON.parse(__firebase_config);
             } else {
-                // --- TEMPELKAN KONFIGURASI FIREBASE ANDA DI SINI ---
-                // 1. Buat proyek di console.firebase.google.com
-                // 2. Salin objek 'firebaseConfig' dari Pengaturan Proyek
-                // 3. Tempelkan di bawah ini
+                // KONFIGURASI FIREBASE ANDA (JIKA HOSTING SENDIRI)
                 firebaseConfig = {
                     apiKey: "AIzaSyAaH46INNC6qn5dwVzcvD25juY5Ou9JKUA",
                     authDomain: "beliprodig.firebaseapp.com",
@@ -321,26 +515,19 @@
                     measurementId: "G-04E1XR3RVD"
                 };
                 // --------------------------------------------------
-                
-                if (firebaseConfig.apiKey.includes("(GANTI")) {
-                    console.warn("PERINGATAN: Anda perlu mengganti 'firebaseConfig' di index.html dengan kunci API Firebase Anda sendiri agar aplikasi ini berfungsi di luar platform ini.");
-                    // authStatus.textContent = "Error: Konfigurasi Firebase tidak ditemukan."; // Dihapus
-                    // authStatus.style.color = 'red'; // Dihapus
-                }
             }
 
-            // Inisialisasi Firebase App
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
 
-            // Setup listener status autentikasi
+            // Setup listener status autentikasi (FUNGSI INI DIUBAH)
             setupAuthListener();
         }
 
 
         // --- 2. Logika Mode Gelap/Terang ---
-        
+        // (Tidak ada perubahan)
         function applyTheme(isDark) {
             if (isDark) {
                 document.documentElement.classList.add('dark');
@@ -352,12 +539,10 @@
                 themeIconDark.classList.remove('hidden');
             }
         }
-        
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const savedTheme = localStorage.getItem('theme');
         let isDarkMode = savedTheme ? savedTheme === 'dark' : prefersDark;
         applyTheme(isDarkMode);
-        
         themeToggle.addEventListener('click', () => {
             isDarkMode = !isDarkMode;
             localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
@@ -365,132 +550,270 @@
         });
 
 
-        // --- 3. Autentikasi Firebase ---
+        // --- 3. Autentikasi Firebase (LOGIKA BARU) ---
 
         function setupAuthListener() {
-            // authStatus.textContent = "Mencoba login..."; // Dihapus
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
-                    // Pengguna sudah login
+                    // --- Pengguna BERHASIL Login (Baik email maupun anonim) ---
                     userId = user.uid;
-                    // authStatus.textContent = "Status: Terhubung"; // Dihapus
+                    showLoggedInUI(user); // Tampilkan UI aplikasi
+                    loadProducts();       // Mulai muat data
                     
-                    // Mulai memuat data setelah login berhasil
-                    loadProducts();
+                    // Muat preferensi font (BARU)
+                    // loadFontPreference(); // DIHAPUS
                     
                 } else {
-                    // Pengguna belum login, coba login
-                    await loginUser();
+                    // --- Pengguna Logout atau Belum Login ---
+                    
+                    // Cek dulu apakah ada token dari platform (Canvas)
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token !== "") {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                            // Jika berhasil, onAuthStateChanged akan dipanggil lagi
+                            // dengan 'user' yang valid, jadi kita stop di sini.
+                            return; 
+                        }
+                    } catch (error) {
+                        console.error("Login dengan Token Kustom Gagal:", error);
+                        // Jika token gagal, lanjut tampilkan form login manual
+                    }
+
+                    // Jika tidak ada 'user' dan tidak ada token,
+                    // tampilkan form login manual.
+                    showLoggedOutUI();
                 }
             });
-            
-            // Panggil loginUser() jika auth.currentUser masih null (untuk login pertama kali)
-            if (!auth.currentUser) {
-                loginUser();
-            }
         }
 
-        async function loginUser() {
-            try {
-                // Coba login dengan token kustom jika ada (disediakan oleh platform)
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token !== "") {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    // Jika tidak ada token, login sebagai anonim
-                    // Ini penting agar bisa menulis ke database (sesuai aturan keamanan)
-                    await signInAnonymously(auth);
+        // --- Fungsi Helper Baru untuk Mengatur UI ---
+        function showLoggedInUI(user) {
+            pageTitle.textContent = "My Purchase"; // DITAMBAHKAN (Default saat login)
+            authContainer.classList.add('hidden'); // Sembunyikan form login
+            mainContent.classList.remove('hidden'); // Tampilkan konten utama (tombol, list)
+            userInfo.classList.remove('hidden');    // Tampilkan info email & logout (DI DALAM SIDEBAR)
+
+            if (user.isAnonymous) {
+                userEmail.textContent = "Mode Tamu";
+            } else {
+                userEmail.textContent = user.email;
+            }
+
+            // (BARU) Reset tampilan ke "My Purchase"
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active-menu-item');
+                if (item.dataset.action === 'my-purchase') {
+                    item.classList.add('active-menu-item');
                 }
+            });
+            // Pastikan empty-state disembunyikan (atau di-reset)
+            if (emptyState.innerHTML.includes("My Subscribe")) {
+                 emptyState.innerHTML = ''; // Kosongkan jika itu pesan 'subscribe'
+            }
+            emptyState.classList.add('hidden');
+        }
+
+        function showLoggedOutUI() {
+            authContainer.classList.remove('hidden'); // Tampilkan form login
+            mainContent.classList.add('hidden');    // Sembunyikan konten utama
+            userInfo.classList.add('hidden');       // Sembunyikan info email & logout (DI DALAM SIDEBAR)
+            authError.textContent = '';             // Kosongkan pesan error
+
+            // (BARU) Reset data pencarian
+            allProducts = [];
+            searchInput.value = '';
+            // (BARU) Reset tampilan search
+            searchWrapper.classList.add('hidden');
+            searchToggleBtn.classList.remove('hidden');
+
+            // Hentikan listener data dan kosongkan list
+            if (unsubscribeFromProducts) {
+                unsubscribeFromProducts();
+                unsubscribeFromProducts = null;
+            }
+            productList.innerHTML = '';
+            emptyState.classList.add('hidden');
+            loadingState.classList.add('hidden');
+
+            pageTitle.textContent = "IKMAL PURCHASE"; // DITAMBAHKAN (Reset saat logout)
+
+            // (BARU) Reset slider font ke default (DIHAPUS)
+            // document.documentElement.style.fontSize = `100%`; // DIHAPUS
+            // fontSizeSlider.value = 100; // DIHAPUS
+        }
+
+        // --- Handler Form Auth (BARU) ---
+        async function handleRegister(e) {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            authError.textContent = ''; // Hapus error lama
+            
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                // Login akan ditangani otomatis oleh onAuthStateChanged
             } catch (error) {
-                console.error("Login Gagal:", error);
-                // authStatus.textContent = "Error: Gagal terhubung ke database."; // Dihapus
-                // authStatus.style.color = 'red'; // Dihapus
+                console.error("Gagal Daftar:", error.code, error.message);
+                if (error.code === 'auth/email-already-in-use') {
+                    authError.textContent = 'Email ini sudah terdaftar. Silakan Masuk.';
+                } else if (error.code === 'auth/weak-password') {
+                    authError.textContent = 'Password terlalu lemah (minimal 6 karakter).';
+                } else {
+                    authError.textContent = 'Gagal mendaftar. Silakan coba lagi.';
+                }
             }
         }
 
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            authError.textContent = '';
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Login akan ditangani otomatis oleh onAuthStateChanged
+            } catch (error) {
+                console.error("Gagal Masuk:", error.code, error.message);
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    authError.textContent = 'Email atau password salah.';
+                } else {
+                    authError.textContent = 'Gagal masuk. Silakan coba lagi.';
+                }
+            }
+        }
+
+        async function handleAnonymousLogin() {
+            authError.textContent = '';
+            try {
+                await signInAnonymously(auth);
+                // Login akan ditangani otomatis oleh onAuthStateChanged
+            } catch (error) {
+                console.error("Gagal Login Anonim:", error);
+                authError.textContent = 'Gagal login sebagai tamu.';
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                // Logout akan ditangani otomatis oleh onAuthStateChanged
+            } catch (error) {
+                console.error("Gagal Logout:", error);
+            }
+        }
+        
 
         // --- 4. Logika CRUD (Create, Read, Update, Delete) ---
+        // (Tidak ada perubahan signifikan di sini)
 
-        // Dapatkan path koleksi pribadi pengguna
         function getCollectionPath() {
-            // Data disimpan per-pengguna untuk privasi
+            // PENTING: Path ini harus menggunakan 'userId'
+            // Jika 'userId' null, fungsi ini seharusnya tidak dipanggil
+            if (!userId) {
+                console.error("FATAL: getCollectionPath dipanggil tanpa userId!");
+                return null;
+            }
             return `/artifacts/${appId}/users/${userId}/products`;
         }
         
-        // (R)ead: Memuat dan menampilkan produk
         function loadProducts() {
-            if (!userId) return; // Jangan lakukan apapun jika belum login
+            if (!userId) return; // Keamanan ganda
+
+            const collectionPath = getCollectionPath();
+            if (!collectionPath) return; // Jangan lanjut jika path null
 
             loadingState.classList.remove('hidden');
             emptyState.classList.add('hidden');
             productList.innerHTML = '';
             
-            // Hentikan listener lama jika ada (mencegah duplikasi)
             if (unsubscribeFromProducts) {
                 unsubscribeFromProducts();
             }
 
-            const productsCol = collection(db, getCollectionPath());
+            const productsCol = collection(db, collectionPath);
             
-            // Gunakan onSnapshot untuk data real-time
-            // Data akan otomatis update jika diubah dari perangkat lain
             unsubscribeFromProducts = onSnapshot(productsCol, (snapshot) => {
                 loadingState.classList.add('hidden');
                 
                 if (snapshot.empty) {
                     emptyState.classList.remove('hidden');
                     productList.innerHTML = '';
+                    allProducts = []; // (BARU) Reset
                     return;
                 }
 
                 emptyState.classList.add('hidden');
-                productList.innerHTML = ''; // Kosongkan daftar
+                // productList.innerHTML = ''; // (PINDAH) Dipindah ke renderFilteredProducts
                 
-                let products = [];
+                // let products = []; // (UBAH) Ganti nama
+                allProducts = []; // (UBAH) Isi array global
                 snapshot.forEach(doc => {
-                    products.push({ id: doc.id, ...doc.data() });
+                    allProducts.push({ id: doc.id, ...doc.data() });
                 });
 
-                // Sortir di sisi klien (client-side) berdasarkan tanggal beli terbaru
-                products.sort((a, b) => new Date(b.tanggalBeli) - new Date(a.tanggalBeli));
+                allProducts.sort((a, b) => new Date(b.tanggalBeli) - new Date(a.tanggalBeli));
                 
-                // Render setiap produk
+                // (BARU) Panggil fungsi render baru
+                renderFilteredProducts();
+
+                /*
+                (HAPUS BLOK LAMA)
                 products.forEach(product => {
                     const card = createProductCard(product);
                     productList.appendChild(card);
                 });
+                */
             }, (error) => {
                 console.error("Gagal memuat produk:", error);
                 loadingState.textContent = "Gagal memuat data.";
             });
         }
         
-        // Helper untuk membuat HTML kartu produk
         function createProductCard(product) {
+            // (Fungsi ini SAMA PERSIS dengan file sebelumnya, tidak perlu diubah)
             const card = document.createElement('div');
             card.className = 'bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg p-5 shadow-sm space-y-3';
             card.dataset.id = product.id;
 
-            // Fungsi helper untuk format
             const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
             const formatCurrency = (num) => num ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num) : 'N/A';
             const sanitize = (str) => str ? str.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
+
+            const tipeProdukHTML = product.tipeProduk ? `
+                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200 dark:bg-blue-800 dark:text-blue-300">
+                    ${sanitize(product.tipeProduk)}
+                </span>
+            ` : '';
+
+            const linkAksesHTML = product.linkAkses ? `
+                <a href="${sanitize(product.linkAkses)}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
+                    Buka Link Akses
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            ` : '';
+            
+            const tombolHTML = linkAksesHTML ? `<div class="pt-2 flex flex-wrap gap-2">${linkAksesHTML}</div>` : '';
 
             card.innerHTML = `
                 <div class="flex justify-between items-start">
                     <h3 class="text-xl font-semibold text-notion-text dark:text-notion-text-dark">${sanitize(product.namaProduk)}</h3>
                     <div class="flex-shrink-0 flex gap-2">
                         <button class="btn-icon btn-edit" data-id="${product.id}" aria-label="Edit produk">
-                            <!-- Ikon Edit -->
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </button>
                         <button class="btn-icon btn-delete text-red-500" data-id="${product.id}" data-name="${sanitize(product.namaProduk)}" aria-label="Hapus produk">
-                            <!-- Ikon Hapus -->
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
                 </div>
                 
-                ${product.ownerProduk ? `<p class="text-sm font-medium text-notion-text-subtle dark:text-notion-text-subtle-dark mb-3">Oleh: ${sanitize(product.ownerProduk)}</p>` : ''}
+                <div class="flex justify-between items-center -mt-2 mb-3">
+                    <p class="text-sm font-medium text-notion-text-subtle dark:text-notion-text-subtle-dark">
+                        ${product.ownerProduk ? `Oleh: ${sanitize(product.ownerProduk)}` : ''}
+                    </p>
+                    ${tipeProdukHTML}
+                </div>
 
                 <div class="text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark space-y-2">
                     <p><strong>Tgl. Beli:</strong> ${formatDate(product.tanggalBeli)}</p>
@@ -498,15 +821,7 @@
                     <p><strong>Email:</strong> ${sanitize(product.email) || 'N/A'}</p>
                 </div>
 
-                ${product.linkAkses ? `
-                <div class="pt-2">
-                    <a href="${sanitize(product.linkAkses)}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
-                        Buka Link Akses
-                        <!-- Ikon Link Eksternal -->
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                    </a>
-                </div>
-                ` : ''}
+                ${tombolHTML}
                 
                 ${(product.akun || product.password) ? `
                 <div class="border-t border-notion-border dark:border-notion-border-dark pt-3 mt-3 space-y-2">
@@ -516,9 +831,7 @@
                         <strong class="text-sm">Password:</strong>
                         <input type="password" value="${sanitize(product.password) || ''}" class="password-field-display notion-input text-sm p-1 flex-1" readonly>
                         <button class="btn-icon btn-toggle-password" aria-label="Tampilkan password">
-                            <!-- Ikon Mata (Tampilkan) -->
                             <svg class="w-5 h-5 toggle-pass-icon-show" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            <!-- Ikon Mata (Sembunyikan) -->
                             <svg class="w-5 h-5 toggle-pass-icon-hide hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064 7 9.542 7 .847 0 1.67.129 2.468.375M17.608 14.608A4.986 4.986 0 0017 12a5 5 0 00-5-5 4.986 4.986 0 00-2.608.608M5 5l14 14"></path></svg>
                         </button>
                     </div>
@@ -535,34 +848,88 @@
             return card;
         }
 
-        // (C)reate & (U)pdate: Menangani submit form
+        // --- (BARU) Fungsi untuk me-render produk yang sudah difilter ---
+        function renderFilteredProducts() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            productList.innerHTML = ''; // Kosongkan list setiap kali render
+
+            // Cek jika `allProducts` ada isinya
+            if (allProducts.length === 0) {
+                // Ini akan ditangani oleh 'snapshot.empty' tapi untuk keamanan
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            const filteredProducts = allProducts.filter(product => {
+                if (searchTerm === "") {
+                    return true; // Tampilkan semua jika search kosong
+                }
+                // Cek di field-field penting
+                return (
+                    product.namaProduk?.toLowerCase().includes(searchTerm) ||
+                    product.ownerProduk?.toLowerCase().includes(searchTerm) ||
+                    product.email?.toLowerCase().includes(searchTerm) ||
+                    product.tipeProduk?.toLowerCase().includes(searchTerm) ||
+                    product.akun?.toLowerCase().includes(searchTerm) ||
+                    product.catatan?.toLowerCase().includes(searchTerm)
+                );
+            });
+
+            if (filteredProducts.length === 0) {
+                if (searchTerm === "") {
+                    // Ini seharusnya tidak terjadi jika allProducts > 0, tapi untuk jaga-jaga
+                    emptyState.classList.remove('hidden');
+                } else {
+                    // Tampilkan status 'tidak ditemukan'
+                    emptyState.classList.add('hidden'); // Sembunyikan empty state default
+                    productList.innerHTML = `<p class="text-center text-notion-text-subtle py-10">Tidak ada produk yang cocok dengan pencarian "${searchInput.value}".</p>`;
+                }
+            } else {
+                emptyState.classList.add('hidden'); // Pastikan disembunyikan
+                filteredProducts.forEach(product => {
+                    const card = createProductCard(product);
+                    productList.appendChild(card);
+                });
+            }
+        }
+        // --- AKHIR FUNGSI RENDER BARU ---
+
         async function handleFormSubmit(e) {
             e.preventDefault();
-            if (!userId) return; // Harus login
+            const collectionPath = getCollectionPath();
+            if (!collectionPath) return;
             
             const productId = document.getElementById('product-id').value;
+
+            let tipeProdukValue = tipeProdukSelect.value;
+            if (tipeProdukValue === 'Lainnya') {
+                tipeProdukValue = tipeProdukLainnyaInput.value.trim() || 'Lainnya';
+            }
+            
+            let emailValue = emailSelect.value;
+            if (emailValue === 'Lainnya') {
+                emailValue = emailLainnyaInput.value.trim();
+            }
             
             const productData = {
                 namaProduk: document.getElementById('namaProduk').value,
                 ownerProduk: document.getElementById('ownerProduk').value,
                 tanggalBeli: document.getElementById('tanggalBeli').value,
                 hargaBeli: document.getElementById('hargaBeli').valueAsNumber || 0,
-                email: document.getElementById('email').value,
+                email: emailValue,
                 linkAkses: document.getElementById('linkAkses').value,
+                tipeProduk: tipeProdukValue,
                 akun: document.getElementById('akun').value,
                 password: document.getElementById('password').value,
                 catatan: document.getElementById('catatan').value,
-                // Tidak perlu 'id' karena Firestore menanganinya
             };
 
             try {
                 if (productId) {
-                    // Update mode: Ganti dokumen yang ada
-                    const docRef = doc(db, getCollectionPath(), productId);
+                    const docRef = doc(db, collectionPath, productId);
                     await setDoc(docRef, productData);
                 } else {
-                    // Create mode: Tambahkan dokumen baru
-                    const colRef = collection(db, getCollectionPath());
+                    const colRef = collection(db, collectionPath);
                     await addDoc(colRef, productData);
                 }
                 closeFormModal();
@@ -572,12 +939,13 @@
             }
         }
         
-        // (D)elete: Menghapus produk
         async function deleteProduct() {
-            if (!productToDeleteId || !userId) return;
+            if (!productToDeleteId) return;
+            const collectionPath = getCollectionPath();
+            if (!collectionPath) return;
             
             try {
-                const docRef = doc(db, getCollectionPath(), productToDeleteId);
+                const docRef = doc(db, collectionPath, productToDeleteId);
                 await deleteDoc(docRef);
                 closeConfirmDeleteModal();
             } catch (error) {
@@ -588,10 +956,10 @@
         
 
         // --- 5. Logika Modal ---
-        
-        // Buka/Tutup Modal Form
+        // (Tidak ada perubahan, kecuali loadProductForEdit)
+
         function openFormModal(product = null) {
-            productForm.reset(); // Reset form setiap kali dibuka
+            productForm.reset();
             
             if (product) {
                 // Mode Edit
@@ -601,15 +969,46 @@
                 document.getElementById('ownerProduk').value = product.ownerProduk;
                 document.getElementById('tanggalBeli').value = product.tanggalBeli;
                 document.getElementById('hargaBeli').value = product.hargaBeli;
-                document.getElementById('email').value = product.email;
+                
+                const predefinedEmailOptions = Array.from(emailSelect.options).map(opt => opt.value);
+                if (product.email && predefinedEmailOptions.includes(product.email)) {
+                    emailSelect.value = product.email;
+                    emailLainnyaInput.value = '';
+                    emailLainnyaContainer.classList.add('hidden');
+                } else if (product.email) {
+                    emailSelect.value = 'Lainnya';
+                    emailLainnyaInput.value = product.email;
+                    emailLainnyaContainer.classList.remove('hidden');
+                } else {
+                    emailSelect.value = '';
+                    emailLainnyaInput.value = '';
+                    emailLainnyaContainer.classList.add('hidden');
+                }
+                
                 document.getElementById('linkAkses').value = product.linkAkses;
+                
+                const predefinedOptions = Array.from(tipeProdukSelect.options).map(opt => opt.value);
+                if (product.tipeProduk && predefinedOptions.includes(product.tipeProduk)) {
+                    tipeProdukSelect.value = product.tipeProduk;
+                    tipeProdukLainnyaInput.value = '';
+                    tipeProdukLainnyaContainer.classList.add('hidden');
+                } else if (product.tipeProduk) {
+                    tipeProdukSelect.value = 'Lainnya';
+                    tipeProdukLainnyaInput.value = product.tipeProduk;
+                    tipeProdukLainnyaContainer.classList.remove('hidden');
+                } else {
+                    tipeProdukSelect.value = '';
+                    tipeProdukLainnyaInput.value = '';
+                    tipeProdukLainnyaContainer.classList.add('hidden');
+                }
+
                 document.getElementById('akun').value = product.akun;
                 document.getElementById('password').value = product.password;
                 document.getElementById('catatan').value = product.catatan;
             } else {
                 // Mode Tambah
                 modalTitle.textContent = "Tambah Produk Baru";
-                document.getElementById('product-id').value = ''; // Pastikan ID kosong
+                document.getElementById('product-id').value = '';
             }
             formModal.classList.remove('hidden');
         }
@@ -617,9 +1016,10 @@
         function closeFormModal() {
             formModal.classList.add('hidden');
             productForm.reset();
+            tipeProdukLainnyaContainer.classList.add('hidden');
+            emailLainnyaContainer.classList.add('hidden');
         }
         
-        // Buka/Tutup Modal Konfirmasi Hapus
         function openConfirmDeleteModal(id, name) {
             productToDeleteId = id;
             productNameToDelete.textContent = name;
@@ -631,15 +1031,11 @@
             confirmDeleteModal.classList.add('hidden');
         }
         
-        // Toggle Tampilkan/Sembunyikan Password
         function togglePasswordVisibility(button) {
-            // Temukan input password yang paling dekat
             const input = button.closest('div').querySelector('input[type="password"], input[type="text"]');
             if (!input) return;
-
             const iconShow = button.querySelector('.toggle-pass-icon-show');
             const iconHide = button.querySelector('.toggle-pass-icon-hide');
-
             if (input.type === 'password') {
                 input.type = 'text';
                 iconShow.classList.add('hidden');
@@ -651,9 +1047,158 @@
             }
         }
         
+        // (BARU) Fungsi untuk mengambil data produk saat tombol edit diklik
+        async function loadProductForEdit(id) {
+            const collectionPath = getCollectionPath();
+            if (!collectionPath) return;
+            
+            try {
+                const docRef = doc(db, collectionPath, id);
+                const docSnap = await getDoc(docRef); // Menggunakan getDoc
+                if (docSnap.exists()) {
+                    openFormModal({ id: docSnap.id, ...docSnap.data() });
+                } else {
+                    console.error("Produk tidak ditemukan untuk diedit");
+                    alert("Produk tidak ditemukan.");
+                }
+            } catch (error) {
+                console.error("Gagal mengambil data untuk edit:", error);
+                alert("Gagal memuat data produk.");
+            }
+        }
 
         // --- 6. Event Listeners ---
         
+        // --- Listener Auth (BARU) ---
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleRegister);
+        logoutBtn.addEventListener('click', handleLogout);
+        anonymousLoginBtn.addEventListener('click', handleAnonymousLogin);
+
+        showRegisterBtn.addEventListener('click', () => {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            authError.textContent = '';
+        });
+        showLoginBtn.addEventListener('click', () => {
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            authError.textContent = '';
+        });
+        // --- Akhir Listener Auth ---
+
+
+        // --- (BARU) Listener Search ---
+        searchInput.addEventListener('input', renderFilteredProducts);
+
+        // (BARU) Listener untuk tombol ikon search
+        searchToggleBtn.addEventListener('click', () => {
+            searchWrapper.classList.remove('hidden');
+            searchToggleBtn.classList.add('hidden');
+            searchInput.focus(); // Langsung fokus ke input
+        });
+
+        // (BARU) Listener untuk 'blur' (klik di luar)
+        searchInput.addEventListener('blur', () => {
+            // Sembunyikan lagi jika input-nya kosong
+            if (searchInput.value.trim() === '') {
+                searchWrapper.classList.add('hidden');
+                searchToggleBtn.classList.remove('hidden');
+            }
+        });
+
+
+        // --- Listener Sidebar (BARU) ---
+        function openSidebar() {
+            sidebar.classList.remove('-translate-x-full');
+            sidebarOverlay.classList.remove('hidden');
+            // Ganti opacity setelah frame berikutnya agar transisi berjalan
+            requestAnimationFrame(() => {
+                sidebarOverlay.classList.add('opacity-50'); // opacity-50 dari tailwind
+                sidebarOverlay.classList.remove('opacity-0');
+            });
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.remove('opacity-50');
+            sidebarOverlay.classList.add('opacity-0');
+            setTimeout(() => {
+                sidebarOverlay.classList.add('hidden');
+            }, 300); // Harus cocok dengan durasi transisi CSS
+        }
+
+        sidebarToggleBtn.addEventListener('click', openSidebar);
+        sidebarCloseBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // Listener Slider Font (DIHAPUS)
+        /*
+        fontSizeSlider.addEventListener('input', (e) => {
+            ...
+        });
+        */
+
+        // Muat preferensi font (DIHAPUS)
+        /*
+        function loadFontPreference() {
+            ...
+        }
+        */
+        // (Pemanggilan dipindah ke setupAuthListener)
+
+        // Listener Menu Sidebar
+        sidebar.addEventListener('click', (e) => {
+            const menuItem = e.target.closest('.menu-item');
+            if (!menuItem) return;
+
+            e.preventDefault();
+            const action = menuItem.dataset.action;
+
+            // Hapus aktif dari semua item
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active-menu-item');
+            });
+            // Tambah aktif ke item yang diklik
+            menuItem.classList.add('active-menu-item');
+
+            // Hentikan listener produk lama jika beralih halaman
+            if (unsubscribeFromProducts) {
+                unsubscribeFromProducts();
+                unsubscribeFromProducts = null;
+            }
+            // Sembunyikan semua konten
+            mainContent.classList.add('hidden');
+            loadingState.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            productList.innerHTML = ''; // Kosongkan daftar
+
+            if (action === 'my-purchase') {
+                pageTitle.textContent = "My Purchase"; // DITAMBAHKAN
+                // Tampilkan konten "my-purchase"
+                mainContent.classList.remove('hidden');
+                // (BARU) Reset search
+                searchInput.value = '';
+                searchWrapper.classList.add('hidden'); // (BARU)
+                searchToggleBtn.classList.remove('hidden'); // (BARU)
+                // Muat ulang produk
+                loadProducts();
+            } else if (action === 'my-subscribe') {
+                pageTitle.textContent = "My Subscribe"; // DITAMBAHKAN
+                // (BARU) Reset search
+                searchInput.value = '';
+                searchWrapper.classList.add('hidden'); // (BARU)
+                searchToggleBtn.classList.remove('hidden'); // (BARU)
+                // Tampilkan pesan "coming soon"
+                emptyState.innerHTML = '<p class="text-lg">Halaman "My Subscribe" akan segera hadir.</p>';
+                emptyState.classList.remove('hidden');
+            }
+
+            closeSidebar();
+        });
+        // --- Akhir Listener Sidebar ---
+
+
         // Tombol utama
         addProductBtn.addEventListener('click', () => openFormModal());
         
@@ -666,7 +1211,27 @@
         cancelDeleteBtn.addEventListener('click', closeConfirmDeleteModal);
         confirmDeleteBtn.addEventListener('click', deleteProduct);
         
-        // Event delegation untuk tombol pada kartu produk
+        // Listener dropdown
+        tipeProdukSelect.addEventListener('change', () => {
+            if (tipeProdukSelect.value === 'Lainnya') {
+                tipeProdukLainnyaContainer.classList.remove('hidden');
+                tipeProdukLainnyaInput.focus();
+            } else {
+                tipeProdukLainnyaContainer.classList.add('hidden');
+                tipeProdukLainnyaInput.value = '';
+            }
+        });
+        emailSelect.addEventListener('change', () => {
+            if (emailSelect.value === 'Lainnya') {
+                emailLainnyaContainer.classList.remove('hidden');
+                emailLainnyaInput.focus();
+            } else {
+                emailLainnyaContainer.classList.add('hidden');
+                emailLainnyaInput.value = '';
+            }
+        });
+
+        // Event delegation untuk kartu produk
         productList.addEventListener('click', (e) => {
             const editBtn = e.target.closest('.btn-edit');
             const deleteBtn = e.target.closest('.btn-delete');
@@ -674,51 +1239,7 @@
 
             if (editBtn) {
                 const id = editBtn.dataset.id;
-                // Ambil data langsung dari DOM/cache akan lebih cepat,
-                // tapi query ke DB lebih aman jika data besar.
-                // Untuk simplisitas, kita ambil dari data yang sudah di-render.
-                // Solusi lebih baik: simpan 'products' di variabel global.
-                // Untuk sekarang, kita buka modal dan isi datanya
-                const card = editBtn.closest('[data-id]');
-                // Ini cara sederhana, idealnya Anda mengambil data dari snapshot/cache
-                // Tapi kita perlu mengambil data lengkap untuk diedit
-                // Mari kita cari data produknya dari snapshot
-                
-                // Karena kita tidak menyimpan array 'products' secara global,
-                // kita perlu cara untuk mengambil data 'product' saat 'edit' diklik.
-                // Cara paling mudah adalah mengambilnya dari elemen DOM
-                // (Ini kurang ideal tapi berfungsi untuk app ini)
-                
-                // Mari kita ubah: Kita akan memuat ulang data saat edit
-                // atau lebih baik lagi: kita perlu menyimpan 'products' di scope atas
-                
-                // Kita tidak bisa mengambil data lengkap dari tombol saja.
-                // Kita perlu query lagi, atau simpan data di variabel global
-                // Mari kita modifikasi 'loadProducts' untuk menyimpan 'allProducts'
-                
-                // --- Perbaikan: Simpan 'allProducts' ---
-                // (Tambahkan 'let allProducts = [];' di atas)
-                // (Di 'onSnapshot', isi 'allProducts = products;')
-                // --- Perbaikan ini perlu implementasi lebih dalam ---
-                
-                // --- Solusi Sederhana Sementara ---
-                // Kita akan mengisi form dengan data yang sudah ada
-                // (Ini akan GAGAL jika data tidak ditampilkan semua)
-                // Oke, mari kita lakukan query sederhana saat edit
-                
-                async function loadProductForEdit(id) {
-                    try {
-                        const docRef = doc(db, getCollectionPath(), id);
-                        const docSnap = await (await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js")).getDoc(docRef);
-                        if (docSnap.exists()) {
-                            openFormModal({ id: docSnap.id, ...docSnap.data() });
-                        } else {
-                            console.error("Produk tidak ditemukan untuk diedit");
-                        }
-                    } catch (error) {
-                        console.error("Gagal mengambil data untuk edit:", error);
-                    }
-                }
+                // (DIUBAH) Memanggil fungsi baru yang lebih aman
                 loadProductForEdit(id);
             }
             
@@ -742,7 +1263,6 @@
         });
 
         // --- Mulai Aplikasi ---
-        // Tunggu DOM dimuat sebelum menjalankan skrip
         document.addEventListener('DOMContentLoaded', initializeAppCore);
     </script>
 </body>
