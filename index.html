@@ -49,19 +49,34 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
+        /* (PERBAIKAN) Mengembalikan style dark mode untuk input */
         .notion-input {
-            @apply w-full px-3 py-2 bg-notion-white dark:bg-notion-white border border-notion-border dark:border-notion-border rounded-md shadow-sm placeholder-notion-text-subtle dark:placeholder-notion-text-subtle focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-notion-text dark:text-notion-text;
+            @apply w-full px-3 py-2 bg-notion-white dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-md shadow-sm placeholder-notion-text-subtle dark:placeholder-notion-text-subtle-dark focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-notion-text dark:text-notion-text-dark;
         }
 
-        /* Perbaikan Bug Autofill Browser (Chrome/Edge) di Mode Gelap */
+        /* (PERBAIKAN) Bug Autofill Browser (Chrome/Edge) */
+        /* Paksa latar belakang putih & teks hitam untuk mode terang */
+        .notion-input:-webkit-autofill,
+        .notion-input:-webkit-autofill:hover,
+        .notion-input:-webkit-autofill:focus,
+        .notion-input:-webkit-autofill:active {
+            -webkit-text-fill-color: #191919 !important; /* notion-text */
+            /* Trik Box-shadow untuk menimpa bg bawaan browser */
+            -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
+            box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
+            caret-color: #191919 !important;
+        }
+        
+        /* (PERBAIKAN) Paksa latar belakang gelap & teks terang untuk mode gelap */
         html.dark .notion-input:-webkit-autofill,
         html.dark .notion-input:-webkit-autofill:hover,
         html.dark .notion-input:-webkit-autofill:focus,
         html.dark .notion-input:-webkit-autofill:active {
-            -webkit-text-fill-color: #191919 !important; 
-            -webkit-box-shadow: none !important;
-            box-shadow: none !important;
-            transition: background-color 9999s ease-in-out 0s;
+            -webkit-text-fill-color: #E3E3E3 !important; /* notion-text-dark */
+            /* Trik Box-shadow untuk menimpa bg bawaan browser */
+            -webkit-box-shadow: 0 0 0px 1000px #2F2F2F inset !important; /* notion-card-dark */
+            box-shadow: 0 0 0px 1000px #2F2F2F inset !important;
+            caret-color: #E3E3E3 !important;
         }
         
         .btn {
@@ -114,7 +129,6 @@
 <body class="bg-notion-bg dark:bg-notion-bg-dark text-notion-text dark:text-notion-text-dark font-sans min-h-screen">
 
     <!-- === SIDEBAR BARU === -->
-    <!-- (PERBAIKAN) Menambahkan opacity-0 ke overlay secara default -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 hidden"></div>
     <nav id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-notion-card dark:bg-notion-card-dark shadow-lg transform -translate-x-full">
         <div class="p-6 h-full flex flex-col">
@@ -611,6 +625,7 @@
 
         // --- FUNGSI UTAMA APLIKASI ---
         async function initializeAppCore() {
+            // (Tidak ada perubahan)
             setLogLevel('Debug');
             let firebaseConfig;
             if (typeof __firebase_config !== 'undefined' && __firebase_config !== "") {
@@ -783,6 +798,7 @@
 
         // --- 4. Logika CRUD (Create, Read, Update, Delete) ---
         function getCollectionPath() {
+            // (Tidak ada perubahan)
             if (!userId) {
                 console.error("UserID tidak ditemukan, tidak bisa mengakses koleksi.");
                 return null;
@@ -797,6 +813,7 @@
         }
         
         function loadProducts() {
+            // (Tidak ada perubahan)
             if (!userId) return;
             const collectionPath = getCollectionPath();
             if (!collectionPath) return; 
@@ -1050,6 +1067,7 @@
         }
 
         async function handleFormSubmit(e) {
+            // (Tidak ada perubahan)
             e.preventDefault();
             hideModalError(); // Sembunyikan error lama
             
@@ -1174,6 +1192,7 @@
 
         // (PERBAIKAN - BARU) Fungsi Sidebar
         function openSidebar() {
+            // (Tidak ada perubahan)
             sidebarOverlay.classList.remove('hidden');
             sidebar.classList.remove('-translate-x-full');
             
@@ -1185,6 +1204,7 @@
 
         // (PERBAIKAN - BARU) Fungsi Sidebar
         function closeSidebar() {
+            // (Tidak ada perubahan)
             sidebarOverlay.classList.add('opacity-0');
             sidebar.classList.add('-translate-x-full');
 
@@ -1196,6 +1216,7 @@
         
         // (BARU) Fungsi untuk menampilkan error di dalam modal
         function showModalError(message) {
+            // (Tidak ada perubahan)
             const modalError = document.getElementById('modal-error');
             modalError.textContent = message;
             modalError.classList.remove('hidden');
@@ -1203,6 +1224,7 @@
         
         // (BARU) Fungsi untuk menyembunyikan error di dalam modal
         function hideModalError() {
+            // (Tidak ada perubahan)
             const modalError = document.getElementById('modal-error');
             modalError.textContent = '';
             modalError.classList.add('hidden');
@@ -1211,30 +1233,24 @@
 
         // (BARU) Fungsi untuk menampilkan/menyembunyikan field form
         function toggleFormFields() {
+            // (Tidak ada perubahan)
             const selectedType = tipeTransaksiSelect.value;
             
             // Sembunyikan semua dulu
             purchaseFields.classList.add('hidden');
             subscribeFields.classList.add('hidden');
             
-            // Hapus 'required' dari semua field dinamis (akan di-handle oleh validasi JS)
-            // tanggalBeliInput.required = false;
-            // tanggalMulaiInput.required = false;
-            // periodeLanggananSelect.required = false;
-
             if (selectedType === 'purchase') {
                 purchaseFields.classList.remove('hidden');
-                // tanggalBeliInput.required = true; 
             } else if (selectedType === 'subscribe') {
                 subscribeFields.classList.remove('hidden');
-                // tanggalMulaiInput.required = true; 
-                // periodeLanggananSelect.required = true; 
             }
         }
 
 
         // (MODIFIKASI) Logika reset form dipindahkan
         function openFormModal(product = null) {
+            // (Tidak ada perubahan)
             hideModalError();
             
             if (product) {
@@ -1339,6 +1355,7 @@
         }
         
         function closeFormModal() {
+            // (Tidak ada perubahan)
             formModal.classList.add('hidden');
             productForm.reset(); // Reset di sini aman
             hideModalError();
@@ -1383,6 +1400,7 @@
         
         // (MODIFIKASI) Menggunakan modal error, bukan alert
         async function loadProductForEdit(id) {
+            // (Tidak ada perubahan)
             const collectionPath = getCollectionPath();
             if (!collectionPath) return;
             
@@ -1444,6 +1462,7 @@
 
         // (MODIFIKASI) Logika klik item menu sidebar
         sidebarMenuList.addEventListener('click', (e) => { 
+            // (Tidak ada perubahan)
             const menuItem = e.target.closest('.menu-item');
             if (!menuItem) return;
             e.preventDefault();
@@ -1514,6 +1533,7 @@
         
         // (BARU) Listener untuk dropdown Periode Langganan
         periodeLanggananSelect.addEventListener('change', () => {
+            // (Tidak ada perubahan)
             if (periodeLanggananSelect.value === 'Lainnya') {
                 periodeLanggananLainnyaContainer.classList.remove('hidden');
                 periodeLanggananLainnyaInput.focus();
@@ -1525,6 +1545,7 @@
 
         // Listener dropdown (Email & Tipe Produk)
         tipeProdukSelect.addEventListener('change', () => {
+            // (Tidak ada perubahan)
             if (tipeProdukSelect.value === 'Lainnya') {
                 tipeProdukLainnyaContainer.classList.remove('hidden');
                 tipeProdukLainnyaInput.focus();
@@ -1534,6 +1555,7 @@
             }
         });
         emailSelect.addEventListener('change', () => {
+            // (Tidak ada perubahan)
             if (emailSelect.value === 'Lainnya') {
                 emailLainnyaContainer.classList.remove('hidden');
                 emailLainnyaInput.focus();
