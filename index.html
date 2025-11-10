@@ -114,6 +114,7 @@
 <body class="bg-notion-bg dark:bg-notion-bg-dark text-notion-text dark:text-notion-text-dark font-sans min-h-screen">
 
     <!-- === SIDEBAR BARU === -->
+    <!-- (PERBAIKAN) Menambahkan opacity-0 ke overlay secara default -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 hidden"></div>
     <nav id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-notion-card dark:bg-notion-card-dark shadow-lg transform -translate-x-full">
         <div class="p-6 h-full flex flex-col">
@@ -125,7 +126,7 @@
             </div>
             
             <!-- Konten Sidebar -->
-            <ul class="flex-1 space-y-2 overflow-y-auto"> <!-- DITAMBAHKAN: overflow-y-auto -->
+            <ul id="sidebar-menu-list" class="flex-1 space-y-2 overflow-y-auto"> <!-- (BARU) Menambahkan ID -->
                 <li>
                     <button class="menu-item active-menu-item" data-action="my-purchase">
                         My Purchase
@@ -289,7 +290,90 @@
                 
                 <input type="hidden" id="product-id">
                 
-                <!-- Nama Produk -->
+                <!-- (BARU) Tipe Transaksi -->
+                <div>
+                    <label for="tipeTransaksi" class="block text-sm font-medium mb-1">Tipe Entri</label>
+                    <div class="relative">
+                        <select id="tipeTransaksi" class="notion-input" required>
+                            <option value="" disabled selected>Pilih tipe...</option>
+                            <option value="purchase">Purchase (Pembelian)</option>
+                            <option value="subscribe">Subscribe (Langganan)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- (MODIFIKASI) Wrapper untuk bidang khusus Purchase -->
+                <div id="purchase-fields" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Tanggal Beli -->
+                        <div>
+                            <label for="tanggalBeli" class="block text-sm font-medium mb-1">Tanggal Beli</label>
+                            <div class="relative input-wrapper">
+                                <input type="date" id="tanggalBeli" class="notion-input pr-10"> <!-- required dihapus, di-handle JS -->
+                                <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Harga Beli -->
+                        <div>
+                            <label for="hargaBeli" class="block text-sm font-medium mb-1">Harga Beli (IDR)</label>
+                            <div class="relative input-wrapper">
+                                <input type="number" id="hargaBeli" class="notion-input pr-10" placeholder="Contoh: 150000">
+                                <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- (BARU) Wrapper untuk bidang khusus Subscribe -->
+                <div id="subscribe-fields" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Tanggal Mulai Langganan -->
+                        <div>
+                            <label for="tanggalMulai" class="block text-sm font-medium mb-1">Tanggal Mulai</label>
+                            <div class="relative input-wrapper">
+                                <input type="date" id="tanggalMulai" class="notion-input pr-10">
+                                <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Harga Langganan -->
+                        <div>
+                            <label for="hargaLangganan" class="block text-sm font-medium mb-1">Harga Langganan (IDR)</label>
+                            <div class="relative input-wrapper">
+                                <input type="number" id="hargaLangganan" class="notion-input pr-10" placeholder="Contoh: 50000">
+                                <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Periode Langganan -->
+                    <div>
+                        <label for="periodeLangganan" class="block text-sm font-medium mb-1">Periode Langganan</label>
+                        <select id="periodeLangganan" class="notion-input">
+                            <option value="">Pilih Periode...</option>
+                            <option value="Bulanan">Bulanan</option>
+                            <option value="Tahunan">Tahunan</option>
+                            <option value="Lifetime">Lifetime (Sekali Bayar)</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                        <div id="periodeLanggananLainnyaContainer" class="hidden mt-2">
+                            <div class="relative input-wrapper">
+                                <input type="text" id="periodeLanggananLainnya" class="notion-input pr-10" placeholder="Ketik periode kustom...">
+                                <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nama Produk (TETAP) -->
                 <div>
                     <label for="namaProduk" class="block text-sm font-medium mb-1">Nama Produk</label>
                     <div class="relative input-wrapper">
@@ -310,30 +394,7 @@
                         </button>
                     </div>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Tanggal Beli -->
-                    <div>
-                        <label for="tanggalBeli" class="block text-sm font-medium mb-1">Tanggal Beli</label>
-                        <div class="relative input-wrapper">
-                            <input type="date" id="tanggalBeli" class="notion-input pr-10" required>
-                            <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Harga Beli -->
-                    <div>
-                        <label for="hargaBeli" class="block text-sm font-medium mb-1">Harga Beli (IDR)</label>
-                        <div class="relative input-wrapper">
-                            <input type="number" id="hargaBeli" class="notion-input pr-10" placeholder="Contoh: 150000">
-                            <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
+                                
                 <!-- Email -->
                 <div>
                     <label for="emailSelect" class="block text-sm font-medium mb-1">Email yang dipakai</label>
@@ -489,6 +550,7 @@
         let db, auth, userId, unsubscribeFromProducts;
         let allProducts = []; 
         let productToDeleteId = null;
+        let currentView = 'my-purchase'; // (BARU) Menentukan tampilan aktif
         
         // --- DOM Elements ---
         // (Tidak ada perubahan)
@@ -514,6 +576,7 @@
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
         const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+        const sidebarMenuList = document.getElementById('sidebar-menu-list'); // (BARU)
         const searchInput = document.getElementById('search-input');
         const searchToggleBtn = document.getElementById('search-toggle-btn');
         const searchWrapper = document.getElementById('search-wrapper');
@@ -534,9 +597,19 @@
         const emailLainnyaContainer = document.getElementById('emailLainnyaContainer');
         const emailLainnyaInput = document.getElementById('emailLainnyaInput');
 
-        
+        // (BARU) Elemen DOM untuk form dinamis
+        const tipeTransaksiSelect = document.getElementById('tipeTransaksi');
+        const purchaseFields = document.getElementById('purchase-fields');
+        const subscribeFields = document.getElementById('subscribe-fields');
+        const tanggalBeliInput = document.getElementById('tanggalBeli');
+        const tanggalMulaiInput = document.getElementById('tanggalMulai');
+        const hargaLanggananInput = document.getElementById('hargaLangganan');
+        const periodeLanggananSelect = document.getElementById('periodeLangganan');
+        const periodeLanggananLainnyaContainer = document.getElementById('periodeLanggananLainnyaContainer');
+        const periodeLanggananLainnyaInput = document.getElementById('periodeLanggananLainnya');
+
+
         // --- FUNGSI UTAMA APLIKASI ---
-        // (Tidak ada perubahan)
         async function initializeAppCore() {
             setLogLevel('Debug');
             let firebaseConfig;
@@ -607,7 +680,8 @@
         }
 
         function showLoggedInUI(user) {
-            pageTitle.textContent = "My Purchase";
+            currentView = 'my-purchase'; // (DIUBAH) Set tampilan default
+            pageTitle.textContent = "My Purchase"; // (DIUBAH) Set judul default
             authContainer.classList.add('hidden');
             mainContent.classList.remove('hidden');
             userInfo.classList.remove('hidden');   
@@ -616,16 +690,21 @@
             } else {
                 userEmail.textContent = user.email;
             }
+            // (DIUBAH) Atur item menu 'my-purchase' sebagai aktif saat login
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.remove('active-menu-item');
                 if (item.dataset.action === 'my-purchase') {
                     item.classList.add('active-menu-item');
                 }
             });
+            
+            // Hapus pesan 'coming soon' jika ada
             if (emptyState.innerHTML.includes("My Subscribe")) {
                  emptyState.innerHTML = ''; 
             }
             emptyState.classList.add('hidden');
+            
+            loadProducts(); // Memuat semua produk
         }
 
         function showLoggedOutUI() {
@@ -703,13 +782,18 @@
         
 
         // --- 4. Logika CRUD (Create, Read, Update, Delete) ---
-        // (Tidak ada perubahan)
         function getCollectionPath() {
             if (!userId) {
-                console.error("FATAL: getCollectionPath dipanggil tanpa userId!");
+                console.error("UserID tidak ditemukan, tidak bisa mengakses koleksi.");
                 return null;
             }
-            return `/artifacts/${appId}/users/${userId}/products`;
+            if (auth.currentUser && auth.currentUser.isAnonymous) {
+                // Untuk tamu, gunakan path lama (private)
+                return `/artifacts/${appId}/users/${userId}/products`;
+            } else {
+                // Untuk pengguna email, gunakan path public
+                return `/artifacts/${appId}/public/data/products`;
+            }
         }
         
         function loadProducts() {
@@ -730,20 +814,22 @@
             unsubscribeFromProducts = onSnapshot(productsCol, (snapshot) => {
                 loadingState.classList.add('hidden');
                 
-                if (snapshot.empty) {
-                    emptyState.classList.remove('hidden');
-                    productList.innerHTML = '';
-                    allProducts = []; 
-                    return;
-                }
-
-                emptyState.classList.add('hidden');
-                allProducts = []; 
+                allProducts = []; // Selalu reset
                 snapshot.forEach(doc => {
                     allProducts.push({ id: doc.id, ...doc.data() });
                 });
-                allProducts.sort((a, b) => new Date(b.tanggalBeli) - new Date(a.tanggalBeli));
-                renderFilteredProducts();
+
+                // (BARU) Buat tanggal utama untuk pengurutan
+                allProducts = allProducts.map(p => ({
+                    ...p,
+                    primaryDate: p.tanggalMulai || p.tanggalBeli || '1970-01-01' 
+                }));
+                
+                // Urutkan *semua* produk berdasarkan tanggal terbaru
+                allProducts.sort((a, b) => new Date(b.primaryDate) - new Date(a.primaryDate));
+                
+                renderFilteredProducts(); 
+
             }, (error) => {
                 console.error("Gagal memuat produk:", error);
                 loadingState.textContent = "Gagal memuat data.";
@@ -751,68 +837,132 @@
         }
         
         function createProductCard(product) {
-            // (Tidak ada perubahan)
+            // (Tidak ada perubahan pada fungsi ini)
+            // ... (Semua logika createProductCard tetap sama) ...
             const card = document.createElement('div');
-            card.className = 'bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg p-5 shadow-sm space-y-3';
+            card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden";
             card.dataset.id = product.id;
 
-            const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
-            const formatCurrency = (num) => num ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num) : 'N/A';
-            const sanitize = (str) => str ? str.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
+            // Fungsi utilitas sanitasi
+            const sanitize = (str) => {
+                if (!str) return '';
+                const temp = document.createElement('div');
+                temp.textContent = str;
+                return temp.innerHTML;
+            };
+
+            // Fungsi utilitas format tanggal
+            const formatDate = (dateString) => {
+                if (!dateString) return 'N/A';
+                try {
+                    return new Date(dateString).toLocaleDateString('id-ID', {
+                        day: '2-digit', month: 'short', year: 'numeric'
+                    });
+                } catch (e) {
+                    return dateString;
+                }
+            };
+            
+            // Fungsi utilitas format mata uang
+            const formatCurrency = (number) => {
+                if (number === null || number === undefined || number === 0) return 'N/A';
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0
+                }).format(number);
+            };
+
+            // (MODIFIKASI) Logika Badge & Detail Produk
+            let tipeTransaksiHTML = '';
+            let productDetailsHTML = '';
+
+            if (product.tipeTransaksi === 'subscribe') {
+                // Tampilan untuk "Subscribe"
+                tipeTransaksiHTML = `
+                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-yellow-600 bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-300">
+                        Subscribe
+                    </span>
+                `;
+                productDetailsHTML = `
+                    <p><strong>Mulai:</strong> ${formatDate(product.tanggalMulai)}</p>
+                    <p><strong>Harga:</strong> ${formatCurrency(product.hargaLangganan)} (${sanitize(product.periodeLangganan) || 'N/A'})</p>
+                    <p><strong>Email:</strong> ${sanitize(product.email) || 'N/A'}</p>
+                `;
+            } else {
+                // Tampilan default untuk "Purchase" (atau data lama)
+                tipeTransaksiHTML = `
+                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200 dark:bg-green-800 dark:text-green-300">
+                        Purchase
+                    </span>
+                `;
+                productDetailsHTML = `
+                    <p><strong>Tgl. Beli:</strong> ${formatDate(product.tanggalBeli)}</p>
+                    <p><strong>Harga:</strong> ${formatCurrency(product.hargaBeli)}</p>
+                    <p><strong>Email:</strong> ${sanitize(product.email) || 'N/A'}</p>
+                `;
+            }
 
             const tipeProdukHTML = product.tipeProduk ? `
                 <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200 dark:bg-blue-800 dark:text-blue-300">
                     ${sanitize(product.tipeProduk)}
                 </span>
             ` : '';
-
-            // (MODIFIKASI) Logika untuk render multi-link
+            
+            const ownerHTML = product.ownerProduk ? `<p class="text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark">Oleh: ${sanitize(product.ownerProduk)}</p>` : '';
+            
             let linkAksesHTML = '';
-            // Handle baik format array baru maupun format string lama untuk kompatibilitas
             if (Array.isArray(product.linkAkses) && product.linkAkses.length > 0) {
-                linkAksesHTML = product.linkAkses.map((link, index) => `
-                    <a href="${sanitize(link)}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
-                        Buka Link ${product.linkAkses.length > 1 ? index + 1 : 'Akses'}
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                    </a>
-                `).join('');
-            } else if (typeof product.linkAkses === 'string' && product.linkAkses) {
-                // Fallback untuk data lama (string tunggal)
+                if (product.linkAkses.length === 1) {
+                    linkAksesHTML = `
+                        <a href="${sanitize(product.linkAkses[0])}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
+                            Buka Link Akses
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    `;
+                } else {
+                    linkAksesHTML = product.linkAkses.map((link, index) => `
+                        <a href="${sanitize(link)}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
+                            Buka Link ${index + 1}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    `).join('');
+                }
+            } else if (typeof product.linkAkses === 'string' && product.linkAkses.length > 0) {
                 linkAksesHTML = `
                     <a href="${sanitize(product.linkAkses)}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
                         Buka Link Akses
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </a>
                 `;
             }
-            // AKHIR MODIFIKASI
             
             const tombolHTML = linkAksesHTML ? `<div class="pt-2 flex flex-wrap gap-2">${linkAksesHTML}</div>` : '';
 
             card.innerHTML = `
+            <div class="p-4 space-y-3">
                 <div class="flex justify-between items-start">
-                    <h3 class="text-xl font-semibold text-notion-text dark:text-notion-text-dark">${sanitize(product.namaProduk)}</h3>
-                    <div class="flex-shrink-0 flex gap-2">
+                    <div>
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            ${tipeTransaksiHTML} <!-- Badge Dinamis -->
+                            ${tipeProdukHTML}
+                        </div>
+                        <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
+                        ${ownerHTML}
+                    </div>
+                    <div class="flex-shrink-0">
                         <button class="btn-icon btn-edit" data-id="${product.id}" aria-label="Edit produk">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </button>
-                        <button class="btn-icon btn-delete text-red-500" data-id="${product.id}" data-name="${sanitize(product.namaProduk)}" aria-label="Hapus produk">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <button class="btn-icon btn-delete" data-id="${product.id}" data-name="${sanitize(product.namaProduk || 'ini')}" aria-label="Hapus produk">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
                 </div>
-                
-                <div class="flex justify-between items-center -mt-2 mb-3">
-                    <p class="text-sm font-medium text-notion-text-subtle dark:text-notion-text-subtle-dark">
-                        ${product.ownerProduk ? `Oleh: ${sanitize(product.ownerProduk)}` : ''}
-                    </p>
-                    ${tipeProdukHTML}
-                </div>
 
+                <!-- (MODIFIKASI) Detail Produk Dinamis -->
                 <div class="text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark space-y-2">
-                    <p><strong>Tgl. Beli:</strong> ${formatDate(product.tanggalBeli)}</p>
-                    <p><strong>Harga:</strong> ${formatCurrency(product.hargaBeli)}</p>
-                    <p><strong>Email:</strong> ${sanitize(product.email) || 'N/A'}</p>
+                    ${productDetailsHTML}
                 </div>
 
                 ${tombolHTML}
@@ -838,19 +988,30 @@
                      <p class="text-sm whitespace-pre-wrap">${sanitize(product.catatan)}</p>
                 </div>
                 ` : ''}
+            </div>
             `;
             return card;
         }
-
+        
         function renderFilteredProducts() {
             // (Tidak ada perubahan)
             const searchTerm = searchInput.value.toLowerCase().trim();
             productList.innerHTML = ''; 
-            if (allProducts.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            }
-            const filteredProducts = allProducts.filter(product => {
+            emptyState.classList.add('hidden'); // Sembunyikan status kosong secara default
+
+            // (BARU) Langkah 1: Filter berdasarkan Tampilan (View)
+            const viewFilteredProducts = allProducts.filter(product => {
+                if (currentView === 'my-purchase') {
+                    // Tampilkan 'purchase' ATAU item lama yang tidak punya tipe (backward compatibility)
+                    return product.tipeTransaksi === 'purchase' || !product.tipeTransaksi;
+                } else if (currentView === 'my-subscribe') {
+                    return product.tipeTransaksi === 'subscribe';
+                }
+                return false; // Seharusnya tidak terjadi
+            });
+
+            // (DIUBAH) Langkah 2: Filter berdasarkan Pencarian (Search)
+            const filteredProducts = viewFilteredProducts.filter(product => {
                 if (searchTerm === "") {
                     return true; 
                 }
@@ -863,14 +1024,23 @@
                     product.catatan?.toLowerCase().includes(searchTerm)
                 );
             });
-            if (filteredProducts.length === 0) {
-                if (searchTerm === "") {
-                    emptyState.classList.remove('hidden');
+            
+            // (DIUBAH) Langkah 3: Logika Tampilan Kosong (Empty State)
+            if (viewFilteredProducts.length === 0) {
+                // Jika tidak ada item SAMA SEKALI untuk tampilan ini
+                if (currentView === 'my-purchase') {
+                    emptyState.innerHTML = '<p>Belum ada produk "Purchase" yang disimpan.</p><p class="text-sm">Klik "Tambah Produk Baru" untuk memulai.</p>';
                 } else {
-                    emptyState.classList.add('hidden');
-                    productList.innerHTML = `<p class="text-center text-notion-text-subtle py-10">Tidak ada produk yang cocok dengan pencarian "${searchInput.value}".</p>`;
+                    emptyState.innerHTML = '<p>Belum ada produk "Subscribe" yang disimpan.</p><p class="text-sm">Klik "Tambah Produk Baru" untuk menambahkannya.</p>';
                 }
+                emptyState.classList.remove('hidden');
+                
+            } else if (filteredProducts.length === 0) {
+                // Jika ADA item, tapi tidak ada yang cocok dengan pencarian
+                emptyState.classList.add('hidden');
+                productList.innerHTML = `<p class="text-center text-notion-text-subtle py-10">Tidak ada produk yang cocok dengan pencarian "${searchInput.value}".</p>`;
             } else {
+                // Jika ada item dan cocok (atau tidak ada pencarian)
                 emptyState.classList.add('hidden');
                 filteredProducts.forEach(product => {
                     const card = createProductCard(product);
@@ -880,40 +1050,93 @@
         }
 
         async function handleFormSubmit(e) {
-            // (Tidak ada perubahan)
             e.preventDefault();
-            const collectionPath = getCollectionPath();
-            if (!collectionPath) return;
+            hideModalError(); // Sembunyikan error lama
             
-            const productId = document.getElementById('product-id').value;
-
-            let tipeProdukValue = tipeProdukSelect.value;
-            if (tipeProdukValue === 'Lainnya') {
-                tipeProdukValue = tipeProdukLainnyaInput.value.trim() || 'Lainnya';
+            const collectionPath = getCollectionPath();
+            if (!collectionPath) {
+                showModalError("Gagal mendapatkan path database. Coba login ulang.");
+                return;
             }
             
+            // Validasi 'Lainnya'
             let emailValue = emailSelect.value;
             if (emailValue === 'Lainnya') {
                 emailValue = emailLainnyaInput.value.trim();
             }
             
-            // (MODIFIKASI) Ubah nilai linkAkses dari string textarea menjadi array
-            const linkAksesValue = document.getElementById('linkAkses').value.trim();
-            // Pisahkan berdasarkan baris baru, rapikan, dan filter baris kosong
-            const linkAksesArray = linkAksesValue ? linkAksesValue.split('\n').map(link => link.trim()).filter(link => link.length > 0) : [];
+            let tipeProdukValue = tipeProdukSelect.value;
+            if (tipeProdukValue === 'Lainnya') {
+                tipeProdukValue = tipeProdukLainnyaInput.value.trim();
+            }
 
-            const productData = {
+            // Ubah string link menjadi array
+            const linkAksesString = document.getElementById('linkAkses').value;
+            const linkAksesArray = linkAksesString
+                .split('\n')
+                .map(link => link.trim())
+                .filter(link => link.length > 0);
+
+            const productId = document.getElementById('product-id').value;
+            
+            // (MODIFIKASI) Membangun data berdasarkan Tipe Transaksi
+            const tipeTransaksiValue = tipeTransaksiSelect.value;
+            
+            // (MODIFIKASI) Validasi dasar
+            if (!tipeTransaksiValue) {
+                showModalError("Harap pilih 'Tipe Entri' (Purchase atau Subscribe).");
+                return;
+            }
+            if (!document.getElementById('namaProduk').value) {
+                showModalError("Harap isi 'Nama Produk'.");
+                return;
+            }
+            // (AKHIR MODIFIKASI) Validasi dasar
+
+            // Data bersama
+            let productData = {
+                tipeTransaksi: tipeTransaksiValue,
                 namaProduk: document.getElementById('namaProduk').value,
                 ownerProduk: document.getElementById('ownerProduk').value,
-                tanggalBeli: document.getElementById('tanggalBeli').value,
-                hargaBeli: document.getElementById('hargaBeli').valueAsNumber || 0,
                 email: emailValue,
-                linkAkses: linkAksesArray, // (DIUBAH) Menyimpan array
+                linkAkses: linkAksesArray,
                 tipeProduk: tipeProdukValue,
                 akun: document.getElementById('akun').value,
                 password: document.getElementById('password').value,
                 catatan: document.getElementById('catatan').value,
             };
+
+            if (tipeTransaksiValue === 'purchase') {
+                // Validasi khusus purchase
+                if (!tanggalBeliInput.value) {
+                    showModalError("Harap isi 'Tanggal Beli' untuk Purchase.");
+                    return;
+                }
+                // Tambahkan data khusus purchase
+                productData.tanggalBeli = tanggalBeliInput.value;
+                productData.hargaBeli = document.getElementById('hargaBeli').valueAsNumber || 0;
+            } else if (tipeTransaksiValue === 'subscribe') {
+                 // Validasi khusus subscribe
+                if (!tanggalMulaiInput.value) {
+                    showModalError("Harap isi 'Tanggal Mulai' untuk Subscribe.");
+                    return;
+                }
+                
+                let periodeLanggananValue = periodeLanggananSelect.value;
+                if (periodeLanggananValue === 'Lainnya') {
+                    periodeLanggananValue = periodeLanggananLainnyaInput.value.trim() || 'Lainnya';
+                }
+                
+                if (!periodeLanggananValue || periodeLanggananValue === 'Lainnya') {
+                     showModalError("Harap pilih atau isi 'Periode Langganan' untuk Subscribe.");
+                    return;
+                }
+                
+                // Tambahkan data khusus subscribe
+                productData.tanggalMulai = tanggalMulaiInput.value;
+                productData.hargaLangganan = hargaLanggananInput.valueAsNumber || 0;
+                productData.periodeLangganan = periodeLanggananValue;
+            }
 
             try {
                 if (productId) {
@@ -926,7 +1149,6 @@
             closeFormModal();
         } catch (error) {
             console.error("Gagal menyimpan produk:", error);
-            // (DIUBAH) Menggunakan modal error, bukan alert
             showModalError("Gagal menyimpan data ke database. Silakan coba lagi.");
         }
     }
@@ -948,8 +1170,30 @@
         }
         
 
-        // --- 5. Logika Modal ---
+        // --- 5. Logika Modal & UI Toggle ---
 
+        // (PERBAIKAN - BARU) Fungsi Sidebar
+        function openSidebar() {
+            sidebarOverlay.classList.remove('hidden');
+            sidebar.classList.remove('-translate-x-full');
+            
+            // Tunda opacity untuk transisi
+            requestAnimationFrame(() => {
+                sidebarOverlay.classList.remove('opacity-0');
+            });
+        }
+
+        // (PERBAIKAN - BARU) Fungsi Sidebar
+        function closeSidebar() {
+            sidebarOverlay.classList.add('opacity-0');
+            sidebar.classList.add('-translate-x-full');
+
+            // Sembunyikan setelah transisi selesai (300ms cocok dengan CSS)
+            setTimeout(() => {
+                sidebarOverlay.classList.add('hidden');
+            }, 300);
+        }
+        
         // (BARU) Fungsi untuk menampilkan error di dalam modal
         function showModalError(message) {
             const modalError = document.getElementById('modal-error');
@@ -965,26 +1209,70 @@
         }
 
 
+        // (BARU) Fungsi untuk menampilkan/menyembunyikan field form
+        function toggleFormFields() {
+            const selectedType = tipeTransaksiSelect.value;
+            
+            // Sembunyikan semua dulu
+            purchaseFields.classList.add('hidden');
+            subscribeFields.classList.add('hidden');
+            
+            // Hapus 'required' dari semua field dinamis (akan di-handle oleh validasi JS)
+            // tanggalBeliInput.required = false;
+            // tanggalMulaiInput.required = false;
+            // periodeLanggananSelect.required = false;
+
+            if (selectedType === 'purchase') {
+                purchaseFields.classList.remove('hidden');
+                // tanggalBeliInput.required = true; 
+            } else if (selectedType === 'subscribe') {
+                subscribeFields.classList.remove('hidden');
+                // tanggalMulaiInput.required = true; 
+                // periodeLanggananSelect.required = true; 
+            }
+        }
+
+
         // (MODIFIKASI) Logika reset form dipindahkan
         function openFormModal(product = null) {
-            // productForm.reset(); // <-- DIHAPUS DARI SINI
-            
-            // Sembunyikan error lama setiap kali modal dibuka
             hideModalError();
             
-            // (DIHAPUS) Logika 'clear-btn' pertama dihapus dari sini
-            // productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
-            //     input.dispatchEvent(new Event('input', { bubbles: true }));
-            // });
-
             if (product) {
                 // Mode Edit
                 modalTitle.textContent = "Edit Produk";
-                document.getElementById('product-id').value = product.id; // ID di-set
-                document.getElementById('namaProduk').value = product.namaProduk;
-                document.getElementById('ownerProduk').value = product.ownerProduk;
+                document.getElementById('product-id').value = product.id;
+                
+                // (MODIFIKASI) Isi Tipe Transaksi & panggil toggle
+                tipeTransaksiSelect.value = product.tipeTransaksi || 'purchase'; // Default ke purchase jika data lama
+                toggleFormFields(); // Tampilkan field yang benar
+                
+                // Isi data purchase
                 document.getElementById('tanggalBeli').value = product.tanggalBeli;
                 document.getElementById('hargaBeli').value = product.hargaBeli;
+                
+                // (BARU) Isi data subscribe
+                document.getElementById('tanggalMulai').value = product.tanggalMulai;
+                document.getElementById('hargaLangganan').value = product.hargaLangganan;
+
+                // (BARU) Logika 'Lainnya' untuk Periode Langganan
+                const predefinedPeriode = Array.from(periodeLanggananSelect.options).map(opt => opt.value);
+                if (product.periodeLangganan && predefinedPeriode.includes(product.periodeLangganan)) {
+                    periodeLanggananSelect.value = product.periodeLangganan;
+                    periodeLanggananLainnyaInput.value = '';
+                    periodeLanggananLainnyaContainer.classList.add('hidden');
+                } else if (product.periodeLangganan) {
+                    periodeLanggananSelect.value = 'Lainnya';
+                    periodeLanggananLainnyaInput.value = product.periodeLangganan;
+                    periodeLanggananLainnyaContainer.classList.remove('hidden');
+                } else {
+                    periodeLanggananSelect.value = '';
+                    periodeLanggananLainnyaInput.value = '';
+                    periodeLanggananLainnyaContainer.classList.add('hidden');
+                }
+
+                // ... (Isi sisa data seperti namaProduk, email, linkAkses, dll - TETAP SAMA) ...
+                document.getElementById('namaProduk').value = product.namaProduk;
+                document.getElementById('ownerProduk').value = product.ownerProduk;
                 
                 const predefinedEmailOptions = Array.from(emailSelect.options).map(opt => opt.value);
                 if (product.email && predefinedEmailOptions.includes(product.email)) {
@@ -1001,17 +1289,13 @@
                     emailLainnyaContainer.classList.add('hidden');
                 }
                 
-                // (MODIFIKASI) Gabungkan array linkAkses (jika ada) menjadi string untuk textarea
                 let linksString = '';
                 if (Array.isArray(product.linkAkses)) {
-                    // Jika data baru (array), gabungkan dengan baris baru
                     linksString = product.linkAkses.join('\n');
                 } else if (typeof product.linkAkses === 'string') {
-                    // Jika data lama (string), tampilkan apa adanya
                     linksString = product.linkAkses;
                 }
                 document.getElementById('linkAkses').value = linksString;
-                // AKHIR MODIFIKASI
                 
                 const predefinedOptions = Array.from(tipeProdukSelect.options).map(opt => opt.value);
                 if (product.tipeProduk && predefinedOptions.includes(product.tipeProduk)) {
@@ -1033,19 +1317,20 @@
                 document.getElementById('catatan').value = product.catatan;
             } else {
                 // Mode Tambah
-                productForm.reset(); // <-- (DIPINDAH) Reset form HANYA saat "Tambah Baru"
+                productForm.reset(); 
+                modalTitle.textContent = "Tambah Produk Baru";
+                document.getElementById('product-id').value = '';
+                
+                // (BARU) Pastikan field dinamis tersembunyi
+                toggleFormFields();
                 
                 // (DIPINDAH) Jalankan 'clear-btn' logic setelah reset
                 productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                 });
-            
-                modalTitle.textContent = "Tambah Produk Baru";
-                document.getElementById('product-id').value = ''; // Pastikan ID kosong
             }
 
-            // (TETAP) Trigger event 'input' sekali lagi setelah data diisi (untuk mode edit)
-            // Ini penting untuk menampilkan tombol 'x' dengan benar
+            // ... (trigger 'input' event untuk tombol 'x' - TETAP SAMA) ...
             productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
                 input.dispatchEvent(new Event('input', { bubbles: true }));
             });
@@ -1054,12 +1339,16 @@
         }
         
         function closeFormModal() {
-            // (Tidak ada perubahan)
             formModal.classList.add('hidden');
-            productForm.reset(); // Reset di sini aman, untuk membersihkan setelah ditutup
-            hideModalError(); // Sembunyikan error saat ditutup
+            productForm.reset(); // Reset di sini aman
+            hideModalError();
+            
+            // (BARU) Sembunyikan field dinamis & container 'Lainnya'
+            purchaseFields.classList.add('hidden');
+            subscribeFields.classList.add('hidden');
             tipeProdukLainnyaContainer.classList.add('hidden');
             emailLainnyaContainer.classList.add('hidden');
+            periodeLanggananLainnyaContainer.classList.add('hidden');
         }
         
         function openConfirmDeleteModal(id, name) {
@@ -1087,11 +1376,10 @@
                 iconHide.classList.remove('hidden');
             } else {
                 input.type = 'password';
-                // (FIX) Bagian 'else' ini hilang di file sebelumnya
                 iconShow.classList.remove('hidden');
                 iconHide.classList.add('hidden');
             }
-        } // <-- (FIX) Kurung kurawal '}' ini hilang
+        }
         
         // (MODIFIKASI) Menggunakan modal error, bukan alert
         async function loadProductForEdit(id) {
@@ -1105,14 +1393,10 @@
                     openFormModal({ id: docSnap.id, ...docSnap.data() });
                 } else {
                     console.error("Produk tidak ditemukan untuk diedit");
-                    // (DIUBAH) Tidak bisa membuka modal jika data tidak ada
-                    // alert("Produk tidak ditemukan."); 
-                    // Kita tidak bisa menampilkan error di modal yang tidak bisa dibuka.
-                    // Ini seharusnya tidak terjadi jika tombolnya ada.
+                    // Tidak bisa membuka modal jika data tidak ada
                 }
             } catch (error) {
                 console.error("Gagal mengambil data untuk edit:", error);
-                // (DIUBAH) Tampilkan error di modal yang *akan* dibuka
                 openFormModal(); // Buka modal kosong
                 showModalError("Gagal memuat data produk. Silakan tutup dan coba lagi.");
             }
@@ -1153,60 +1437,44 @@
         });
 
         // --- Listener Sidebar ---
-        // (Tidak ada perubahan)
-        function openSidebar() {
-            sidebar.classList.remove('-translate-x-full');
-            sidebarOverlay.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                sidebarOverlay.classList.add('opacity-50'); 
-                sidebarOverlay.classList.remove('opacity-0');
-            });
-        }
-        function closeSidebar() {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.remove('opacity-50');
-            sidebarOverlay.classList.add('opacity-0');
-            setTimeout(() => {
-                sidebarOverlay.classList.add('hidden');
-            }, 300); 
-        }
+        // (PERBAIKAN - BARU) Listener untuk Buka/Tutup Sidebar
         sidebarToggleBtn.addEventListener('click', openSidebar);
         sidebarCloseBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
-        sidebar.addEventListener('click', (e) => {
+
+        // (MODIFIKASI) Logika klik item menu sidebar
+        sidebarMenuList.addEventListener('click', (e) => { 
             const menuItem = e.target.closest('.menu-item');
             if (!menuItem) return;
             e.preventDefault();
+            
             const action = menuItem.dataset.action;
+
+            // 1. Update tombol aktif
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.remove('active-menu-item');
             });
             menuItem.classList.add('active-menu-item');
-            if (unsubscribeFromProducts) {
-                unsubscribeFromProducts();
-                unsubscribeFromProducts = null;
-            }
-            mainContent.classList.add('hidden');
-            loadingState.classList.add('hidden');
-            emptyState.classList.add('hidden');
-            productList.innerHTML = ''; 
 
+            // 2. Update status tampilan global
+            currentView = action;
+
+            // 3. Update UI (Judul Halaman)
             if (action === 'my-purchase') {
                 pageTitle.textContent = "My Purchase";
-                mainContent.classList.remove('hidden');
-                searchInput.value = '';
-                searchWrapper.classList.add('hidden');
-                searchToggleBtn.classList.remove('hidden');
-                loadProducts();
             } else if (action === 'my-subscribe') {
                 pageTitle.textContent = "My Subscribe";
-                searchInput.value = '';
-                searchWrapper.classList.add('hidden');
-                searchToggleBtn.classList.remove('hidden');
-                emptyState.innerHTML = '<p class="text-lg">Halaman "My Subscribe" akan segera hadir.</p>';
-                emptyState.classList.remove('hidden');
             }
-            closeSidebar();
+            
+            // 4. Reset pencarian
+            searchInput.value = '';
+            searchWrapper.classList.add('hidden');
+            searchToggleBtn.classList.remove('hidden');
+            
+            // 5. Render ulang daftar produk dengan filter tampilan yang baru
+            renderFilteredProducts();
+
+            closeSidebar(); // (PERBAIKAN) Fungsi ini sekarang sudah ada
         });
 
         // --- Listener Tombol & Modal ---
@@ -1221,17 +1489,15 @@
         
         // (BARU) Listener untuk menampilkan/menyembunyikan tombol 'x' clear
         productForm.addEventListener('input', (e) => {
-            // Hanya targetkan input/textarea
+            // (Tidak ada perubahan)
             if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 return;
             }
-            // Cari wrapper dan tombol 'x'
             const wrapper = e.target.closest('.input-wrapper');
             if (!wrapper) return;
             const clearBtn = wrapper.querySelector('.clear-btn');
             if (!clearBtn) return;
             
-            // Tampilkan jika ada isinya, sembunyikan jika kosong
             if (e.target.value.length > 0) {
                 clearBtn.classList.remove('hidden');
             } else {
@@ -1243,8 +1509,21 @@
         cancelDeleteBtn.addEventListener('click', closeConfirmDeleteModal);
         confirmDeleteBtn.addEventListener('click', deleteProduct);
         
-        // Listener dropdown
-        // (Tidak ada perubahan)
+        // (BARU) Listener untuk dropdown Tipe Transaksi
+        tipeTransaksiSelect.addEventListener('change', toggleFormFields);
+        
+        // (BARU) Listener untuk dropdown Periode Langganan
+        periodeLanggananSelect.addEventListener('change', () => {
+            if (periodeLanggananSelect.value === 'Lainnya') {
+                periodeLanggananLainnyaContainer.classList.remove('hidden');
+                periodeLanggananLainnyaInput.focus();
+            } else {
+                periodeLanggananLainnyaContainer.classList.add('hidden');
+                periodeLanggananLainnyaInput.value = '';
+            }
+        });
+
+        // Listener dropdown (Email & Tipe Produk)
         tipeProdukSelect.addEventListener('change', () => {
             if (tipeProdukSelect.value === 'Lainnya') {
                 tipeProdukLainnyaContainer.classList.remove('hidden');
@@ -1286,25 +1565,25 @@
         
         // (MODIFIKASI) Event delegation untuk tombol di dalam form (toggle password DAN clear)
         formModal.addEventListener('click', (e) => {
+            // (Tidak ada perubahan)
             const togglePassBtn = e.target.closest('.btn-toggle-password');
             const clearBtn = e.target.closest('.clear-btn');
 
             if (togglePassBtn) {
                 togglePasswordVisibility(togglePassBtn);
-                return; // Selesai
+                return; 
             }
             
             if (clearBtn) {
-                e.preventDefault(); // Hanya untuk clear btn
+                e.preventDefault(); 
                 const wrapper = clearBtn.closest('.input-wrapper');
                 const input = wrapper.querySelector('input, textarea');
                 if (input) {
                     input.value = '';
-                    // Trigger 'input' event agar tombol 'x' hilang
                     input.dispatchEvent(new Event('input', { bubbles: true })); 
                     input.focus();
                 }
-                return; // Selesai
+                return; 
             }
         });
 
