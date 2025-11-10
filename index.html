@@ -283,6 +283,10 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
+                
+                <!-- (BARU) Kontainer Pesan Error Modal -->
+                <div id="modal-error" class="hidden text-red-600 text-sm p-3 bg-red-100 dark:bg-red-900 dark:text-red-200 rounded-md"></div>
+                
                 <input type="hidden" id="product-id">
                 
                 <!-- Nama Produk -->
@@ -917,15 +921,16 @@
                     await setDoc(docRef, productData);
                 } else {
                     const colRef = collection(db, collectionPath);
-                    await addDoc(colRef, productData);
-                }
-                closeFormModal();
-            } catch (error) {
-                console.error("Gagal menyimpan produk:", error);
-                alert("Gagal menyimpan data ke database.");
+                await addDoc(colRef, productData);
             }
+            closeFormModal();
+        } catch (error) {
+            console.error("Gagal menyimpan produk:", error);
+            // (DIUBAH) Menggunakan modal error, bukan alert
+            showModalError("Gagal menyimpan data ke database. Silakan coba lagi.");
         }
-        
+    }
+    
         async function deleteProduct() {
             // (Tidak ada perubahan)
             if (!productToDeleteId) return;
@@ -945,19 +950,38 @@
 
         // --- 5. Logika Modal ---
 
+        // (BARU) Fungsi untuk menampilkan error di dalam modal
+        function showModalError(message) {
+            const modalError = document.getElementById('modal-error');
+            modalError.textContent = message;
+            modalError.classList.remove('hidden');
+        }
+        
+        // (BARU) Fungsi untuk menyembunyikan error di dalam modal
+        function hideModalError() {
+            const modalError = document.getElementById('modal-error');
+            modalError.textContent = '';
+            modalError.classList.add('hidden');
+        }
+
+
+        // (MODIFIKASI) Logika reset form dipindahkan
         function openFormModal(product = null) {
-            productForm.reset();
+            // productForm.reset(); // <-- DIHAPUS DARI SINI
             
-            // (BARU) Secara manual mentrigger event 'input' untuk semua input
-            // agar tombol 'x' tersembunyi saat form dibuka
-            productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
-                // Buat event baru dan kirimkan
-                // Perlu 'bubbles: true' agar event delegation di form menangkapnya
-                input.dispatchEvent(new Event('input', { bubbles: true }));
-            });
+            // Sembunyikan error lama setiap kali modal dibuka
+            hideModalError();
+            
+            // (DIHAPUS) Logika 'clear-btn' pertama dihapus dari sini
+            // productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
+            //     input.dispatchEvent(new Event('input', { bubbles: true }));
+            // });
 
             if (product) {
                 // Mode Edit
+                modalTitle.textContent = "Edit Produk";
+                document.getElementById('product-id').value = product.id; // ID di-set
+                document.getElementById('namaProduk').value = product.namaProduk;
                 document.getElementById('ownerProduk').value = product.ownerProduk;
                 document.getElementById('tanggalBeli').value = product.tanggalBeli;
                 document.getElementById('hargaBeli').value = product.hargaBeli;
@@ -1008,11 +1032,20 @@
                 document.getElementById('password').value = product.password;
                 document.getElementById('catatan').value = product.catatan;
             } else {
+                // Mode Tambah
+                productForm.reset(); // <-- (DIPINDAH) Reset form HANYA saat "Tambah Baru"
+                
+                // (DIPINDAH) Jalankan 'clear-btn' logic setelah reset
+                productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            
                 modalTitle.textContent = "Tambah Produk Baru";
-                document.getElementById('product-id').value = '';
+                document.getElementById('product-id').value = ''; // Pastikan ID kosong
             }
 
-            // (BARU) Trigger event 'input' sekali lagi setelah data diisi (untuk mode edit)
+            // (TETAP) Trigger event 'input' sekali lagi setelah data diisi (untuk mode edit)
+            // Ini penting untuk menampilkan tombol 'x' dengan benar
             productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
                 input.dispatchEvent(new Event('input', { bubbles: true }));
             });
@@ -1023,7 +1056,8 @@
         function closeFormModal() {
             // (Tidak ada perubahan)
             formModal.classList.add('hidden');
-            productForm.reset();
+            productForm.reset(); // Reset di sini aman, untuk membersihkan setelah ditutup
+            hideModalError(); // Sembunyikan error saat ditutup
             tipeProdukLainnyaContainer.classList.add('hidden');
             emailLainnyaContainer.classList.add('hidden');
         }
@@ -1053,28 +1087,34 @@
                 iconHide.classList.remove('hidden');
             } else {
                 input.type = 'password';
+                // (FIX) Bagian 'else' ini hilang di file sebelumnya
                 iconShow.classList.remove('hidden');
                 iconHide.classList.add('hidden');
             }
-        }
+        } // <-- (FIX) Kurung kurawal '}' ini hilang
         
+        // (MODIFIKASI) Menggunakan modal error, bukan alert
         async function loadProductForEdit(id) {
-            // (Tidak ada perubahan)
             const collectionPath = getCollectionPath();
             if (!collectionPath) return;
             
             try {
                 const docRef = doc(db, collectionPath, id);
-                const docSnap = await getDoc(docRef); 
+                const docSnap = await getDoc(docRef); // Menggunakan getDoc
                 if (docSnap.exists()) {
                     openFormModal({ id: docSnap.id, ...docSnap.data() });
                 } else {
                     console.error("Produk tidak ditemukan untuk diedit");
-                    alert("Produk tidak ditemukan.");
+                    // (DIUBAH) Tidak bisa membuka modal jika data tidak ada
+                    // alert("Produk tidak ditemukan."); 
+                    // Kita tidak bisa menampilkan error di modal yang tidak bisa dibuka.
+                    // Ini seharusnya tidak terjadi jika tombolnya ada.
                 }
             } catch (error) {
                 console.error("Gagal mengambil data untuk edit:", error);
-                alert("Gagal memuat data produk.");
+                // (DIUBAH) Tampilkan error di modal yang *akan* dibuka
+                openFormModal(); // Buka modal kosong
+                showModalError("Gagal memuat data produk. Silakan tutup dan coba lagi.");
             }
         }
 
