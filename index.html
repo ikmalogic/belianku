@@ -119,6 +119,11 @@
             @apply bg-notion-border dark:bg-notion-border-dark font-semibold;
         }
         /* === Akhir Gaya Sidebar === */
+        
+        /* (BARU) Kelas untuk kartu yang dibuka secara manual */
+        .manually-opened {
+            @apply cursor-pointer;
+        }
     </style>
 </head>
 
@@ -405,6 +410,20 @@
                     </div>
                 </div>
                 
+                <!-- === FITUR GEMINI BARU === -->
+                <div id="gemini-feature-container" class="hidden space-y-3 pt-2">
+                    <button type="button" id="gemini-info-btn" class="btn-secondary w-full flex items-center justify-center gap-2 text-sm">
+                        ✨ Dapatkan Info Bermanfaat
+                    </button>
+                    <div id="gemini-loading" class="hidden text-center text-notion-text-subtle text-sm p-3">
+                        <p>Menghubungi AI... (ini mungkin perlu beberapa detik)</p>
+                    </div>
+                    <div id="gemini-response-container" class="hidden text-sm p-4 bg-notion-border dark:bg-notion-border-dark rounded-md space-y-2">
+                        <!-- Respons Gemini akan dimasukkan di sini -->
+                    </div>
+                </div>
+                <!-- === AKHIR FITUR GEMINI === -->
+                
                 <!-- Owner Produk -->
                 <div>
                     <label for="ownerProduk" class="block text-sm font-medium mb-1">Owner/Author Produk</label>
@@ -540,8 +559,7 @@
     
     <!-- Impor Firebase -->
     <script type="module">
-        // Import fungsi yang diperlukan dari Firebase SDK
-        // (PERBAIKAN) Menambahkan https://
+        // (PERBAIKAN) URL Impor sudah benar
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
             getAuth, 
@@ -551,7 +569,6 @@
             createUserWithEmailAndPassword,
             signInWithEmailAndPassword,
             signOut
-        // (PERBAIKAN) Menambahkan https://
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, 
@@ -565,7 +582,6 @@
             query,
             where,
             getDoc 
-        // (PERBAIKAN) Menambahkan https://
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- 1. Inisialisasi Firebase ---
@@ -636,6 +652,12 @@
         // (PERBAIKAN) DOM Elemen untuk toggle kartu
         const cardToggleSwitch = document.getElementById('card-toggle-switch');
         const cardToggleHandle = document.getElementById('card-toggle-handle');
+        
+        // (BARU) DOM Elemen untuk Fitur Gemini
+        const geminiFeatureContainer = document.getElementById('gemini-feature-container');
+        const geminiInfoBtn = document.getElementById('gemini-info-btn');
+        const geminiLoading = document.getElementById('gemini-loading');
+        const geminiResponseContainer = document.getElementById('gemini-response-container');
 
 
         // --- FUNGSI UTAMA APLIKASI ---
@@ -868,8 +890,10 @@
             });
         }
         
-        // (PERBAIKAN) Fungsi `createProductCard` dirombak total
-        function createProductCard(product) {
+        // (PERBAIKAN) Fungsi `createProductCard` dipecah menjadi `createCompactCard` dan `createFullCard`
+        
+        // (BARU) Fungsi untuk membuat kartu ringkas
+        function createCompactCard(product) {
             const card = document.createElement('div');
             card.dataset.id = product.id;
             
@@ -881,15 +905,137 @@
                 return temp.innerHTML;
             };
 
-            // (PERBAIKAN) Logika Tampilan diciabangkan
-            if (isCardViewCollapsed) {
-                // === TAMPILAN COMPACT (HANYA JUDUL) ===
-                card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden p-4 flex justify-between items-center";
-                
-                card.innerHTML = `
-                    <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
+            card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden p-4 flex justify-between items-center compact-card-clickable cursor-pointer transition-colors hover:bg-notion-border dark:hover:bg-notion-border-dark";
+            
+            card.innerHTML = `
+                <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
+                <div class="flex-shrink-0">
+                    <button class="btn-icon btn-edit" data-id="${product.id}" aria-label="Edit produk">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </button>
+                    <button class="btn-icon btn-delete" data-id="${product.id}" data-name="${sanitize(product.namaProduk || 'ini')}" aria-label="Hapus produk">
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        // (BARU) Fungsi untuk membuat kartu penuh
+        function createFullCard(product) {
+            const card = document.createElement('div');
+            card.dataset.id = product.id;
+            
+             // Fungsi utilitas sanitasi
+            const sanitize = (str) => {
+                if (!str) return '';
+                const temp = document.createElement('div');
+                temp.textContent = str;
+                return temp.innerHTML;
+            };
+
+            card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden";
+            
+            // Fungsi utilitas format tanggal
+            const formatDate = (dateString) => {
+                if (!dateString) return 'N/A';
+                try {
+                    return new Date(dateString).toLocaleDateString('id-ID', {
+                        day: '2-digit', month: 'short', year: 'numeric'
+                    });
+                } catch (e) {
+                    return dateString;
+                }
+            };
+            
+            // Fungsi utilitas format mata uang
+            const formatCurrency = (number) => {
+                if (number === null || number === undefined || number === 0) return 'N/A';
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0
+                }).format(number);
+            };
+
+            // (MODIFIKASI) Logika Badge & Detail Produk
+            let tipeTransaksiHTML = '';
+            let productDetailsHTML = '';
+
+            if (product.tipeTransaksi === 'subscribe') {
+                // Tampilan untuk "Subscribe"
+                tipeTransaksiHTML = `
+                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-yellow-600 bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-300">
+                        Subscribe
+                    </span>
+                `;
+                productDetailsHTML = `
+                    <p><strong>Mulai:</strong> ${formatDate(product.tanggalMulai)}</p>
+                    <p><strong>Harga:</strong> ${formatCurrency(product.hargaLangganan)} (${sanitize(product.periodeLangganan) || 'N/A'})</p>
+                    <p><strong>Email:</strong> ${sanitize(product.email) || 'N/A'}</p>
+                `;
+            } else {
+                // Tampilan default untuk "Purchase" (atau data lama)
+                tipeTransaksiHTML = `
+                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200 dark:bg-green-800 dark:text-green-300">
+                        Purchase
+                    </span>
+                `;
+                productDetailsHTML = `
+                    <p><strong>Tgl. Beli:</strong> ${formatDate(product.tanggalBeli)}</p>
+                    <p><strong>Harga:</strong> ${formatCurrency(product.hargaBeli)}</p>
+                    <p><strong>Email:</strong> ${sanitize(product.email) || 'N/A'}</p>
+                `;
+            }
+
+            const tipeProdukHTML = product.tipeProduk ? `
+                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200 dark:bg-blue-800 dark:text-blue-300">
+                    ${sanitize(product.tipeProduk)}
+                </span>
+            ` : '';
+            
+            const ownerHTML = product.ownerProduk ? `<p class="text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark">Oleh: ${sanitize(product.ownerProduk)}</p>` : '';
+            
+            let linkAksesHTML = '';
+            if (Array.isArray(product.linkAkses) && product.linkAkses.length > 0) {
+                if (product.linkAkses.length === 1) {
+                    linkAksesHTML = `
+                        <a href="${sanitize(product.linkAkses[0])}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
+                            Buka Link Akses
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    `;
+                } else {
+                    linkAksesHTML = product.linkAkses.map((link, index) => `
+                        <a href="${sanitize(link)}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
+                            Buka Link ${index + 1}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    `).join('');
+                }
+            } else if (typeof product.linkAkses === 'string' && product.linkAkses.length > 0) {
+                linkAksesHTML = `
+                    <a href="${sanitize(product.linkAkses)}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
+                        Buka Link Akses
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
+                `;
+            }
+            
+            const tombolHTML = linkAksesHTML ? `<div class="pt-2 flex flex-wrap gap-2">${linkAksesHTML}</div>` : '';
+
+            card.innerHTML = `
+            <div class="p-4 space-y-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            ${tipeTransaksiHTML} <!-- Badge Dinamis -->
+                            ${tipeProdukHTML}
+                        </div>
+                        <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
+                        ${ownerHTML}
+                    </div>
                     <div class="flex-shrink-0">
-                        <!-- Tombol Edit/Delete tetap ada, tapi hanya ikon -->
                         <button class="btn-icon btn-edit" data-id="${product.id}" aria-label="Edit produk">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </button>
@@ -897,157 +1043,44 @@
                             <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
-                `;
-                
-            } else {
-                // === TAMPILAN PENUH (KODE SEBELUMNYA) ===
-                card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden";
-                
-                // Fungsi utilitas format tanggal
-                const formatDate = (dateString) => {
-                    if (!dateString) return 'N/A';
-                    try {
-                        return new Date(dateString).toLocaleDateString('id-ID', {
-                            day: '2-digit', month: 'short', year: 'numeric'
-                        });
-                    } catch (e) {
-                        return dateString;
-                    }
-                };
-                
-                // Fungsi utilitas format mata uang
-                const formatCurrency = (number) => {
-                    if (number === null || number === undefined || number === 0) return 'N/A';
-                    return new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
-                        minimumFractionDigits: 0
-                    }).format(number);
-                };
-
-                // (MODIFIKASI) Logika Badge & Detail Produk
-                let tipeTransaksiHTML = '';
-                let productDetailsHTML = '';
-
-                if (product.tipeTransaksi === 'subscribe') {
-                    // Tampilan untuk "Subscribe"
-                    tipeTransaksiHTML = `
-                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-yellow-600 bg-yellow-200 dark:bg-yellow-800 dark:text-yellow-300">
-                            Subscribe
-                        </span>
-                    `;
-                    productDetailsHTML = `
-                        <p><strong>Mulai:</strong> ${formatDate(product.tanggalMulai)}</p>
-                        <p><strong>Harga:</strong> ${formatCurrency(product.hargaLangganan)} (${sanitize(product.periodeLangganan) || 'N/A'})</p>
-                        <p><strong>Email:</strong> ${sanitize(product.email) || 'N/A'}</p>
-                    `;
-                } else {
-                    // Tampilan default untuk "Purchase" (atau data lama)
-                    tipeTransaksiHTML = `
-                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-green-600 bg-green-200 dark:bg-green-800 dark:text-green-300">
-                            Purchase
-                        </span>
-                    `;
-                    productDetailsHTML = `
-                        <p><strong>Tgl. Beli:</strong> ${formatDate(product.tanggalBeli)}</p>
-                        <p><strong>Harga:</strong> ${formatCurrency(product.hargaBeli)}</p>
-                        <p><strong>Email:</strong> ${sanitize(product.email) || 'N/A'}</p>
-                    `;
-                }
-
-                const tipeProdukHTML = product.tipeProduk ? `
-                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200 dark:bg-blue-800 dark:text-blue-300">
-                        ${sanitize(product.tipeProduk)}
-                    </span>
-                ` : '';
-                
-                const ownerHTML = product.ownerProduk ? `<p class="text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark">Oleh: ${sanitize(product.ownerProduk)}</p>` : '';
-                
-                let linkAksesHTML = '';
-                if (Array.isArray(product.linkAkses) && product.linkAkses.length > 0) {
-                    if (product.linkAkses.length === 1) {
-                        linkAksesHTML = `
-                            <a href="${sanitize(product.linkAkses[0])}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
-                                Buka Link Akses
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            </a>
-                        `;
-                    } else {
-                        linkAksesHTML = product.linkAkses.map((link, index) => `
-                            <a href="${sanitize(link)}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
-                                Buka Link ${index + 1}
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            </a>
-                        `).join('');
-                    }
-                } else if (typeof product.linkAkses === 'string' && product.linkAkses.length > 0) {
-                    linkAksesHTML = `
-                        <a href="${sanitize(product.linkAkses)}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
-                            Buka Link Akses
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        </a>
-                    `;
-                }
-                
-                const tombolHTML = linkAksesHTML ? `<div class="pt-2 flex flex-wrap gap-2">${linkAksesHTML}</div>` : '';
-
-                card.innerHTML = `
-                <div class="p-4 space-y-3">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="flex flex-wrap gap-2 mb-2">
-                                ${tipeTransaksiHTML} <!-- Badge Dinamis -->
-                                ${tipeProdukHTML}
-                            </div>
-                            <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
-                            ${ownerHTML}
-                        </div>
-                        <div class="flex-shrink-0">
-                            <button class="btn-icon btn-edit" data-id="${product.id}" aria-label="Edit produk">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            </button>
-                            <button class="btn-icon btn-delete" data-id="${product.id}" data-name="${sanitize(product.namaProduk || 'ini')}" aria-label="Hapus produk">
-                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- (MODIFIKASI) Detail Produk Dinamis -->
-                    <div class="text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark space-y-2">
-                        ${productDetailsHTML}
-                    </div>
-
-                    ${tombolHTML}
-                    
-                    ${(product.akun || product.password) ? `
-                    <div class="border-t border-notion-border dark:border-notion-border-dark pt-3 mt-3 space-y-2">
-                        <h4 class="font-medium">Info Akun:</h4>
-                        <p class="text-sm"><strong>Akun:</strong> ${sanitize(product.akun) || 'N/A'}</p>
-                        <div class="flex items-center gap-2">
-                            <strong class="text-sm">Password:</strong>
-                            <input type="password" value="${sanitize(product.password) || ''}" class="password-field-display notion-input text-sm p-1 flex-1" readonly>
-                            <button class="btn-icon btn-toggle-password" aria-label="Tampilkan password">
-                                <svg class="w-5 h-5 toggle-pass-icon-show" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                <svg class="w-5 h-5 toggle-pass-icon-hide hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064 7 9.542 7 .847 0 1.67.129 2.468.375M17.608 14.608A4.986 4.986 0 0017 12a5 5 0 00-5-5 4.986 4.986 0 00-2.608.608M5 5l14 14"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                    ` : ''}
-
-                    ${product.catatan ? `
-                    <div class="border-t border-notion-border dark:border-notion-border-dark pt-3 mt-3">
-                         <h4 class="font-medium mb-1">Catatan:</h4>
-                         <p class="text-sm whitespace-pre-wrap">${sanitize(product.catatan)}</p>
-                    </div>
-                    ` : ''}
                 </div>
-                `;
-            }
 
+                <!-- (MODIFIKASI) Detail Produk Dinamis -->
+                <div class="text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark space-y-2">
+                    ${productDetailsHTML}
+                </div>
+
+                ${tombolHTML}
+                
+                ${(product.akun || product.password) ? `
+                <div class="border-t border-notion-border dark:border-notion-border-dark pt-3 mt-3 space-y-2">
+                    <h4 class="font-medium">Info Akun:</h4>
+                    <p class="text-sm"><strong>Akun:</strong> ${sanitize(product.akun) || 'N/A'}</p>
+                    <div class="flex items-center gap-2">
+                        <strong class="text-sm">Password:</strong>
+                        <input type="password" value="${sanitize(product.password) || ''}" class="password-field-display notion-input text-sm p-1 flex-1" readonly>
+                        <button class="btn-icon btn-toggle-password" aria-label="Tampilkan password">
+                            <svg class="w-5 h-5 toggle-pass-icon-show" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <svg class="w-5 h-5 toggle-pass-icon-hide hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064 7 9.542 7 .847 0 1.67.129 2.468.375M17.608 14.608A4.986 4.986 0 0017 12a5 5 0 00-5-5 4.986 4.986 0 00-2.608.608M5 5l14 14"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                ` : ''}
+
+                ${product.catatan ? `
+                <div class="border-t border-notion-border dark:border-notion-border-dark pt-3 mt-3">
+                     <h4 class="font-medium mb-1">Catatan:</h4>
+                     <p class="text-sm whitespace-pre-wrap">${sanitize(product.catatan)}</p>
+                </div>
+                ` : ''}
+            </div>
+            `;
+            
             return card;
         }
 
         
+        // (PERBAIKAN) Diperbarui untuk menggunakan fungsi kartu yang baru
         function renderFilteredProducts() {
             // (Tidak ada perubahan)
             const searchTerm = searchInput.value.toLowerCase().trim();
@@ -1105,7 +1138,13 @@
                 // Jika ada item dan cocok (atau tidak ada pencarian)
                 emptyState.classList.add('hidden');
                 filteredProducts.forEach(product => {
-                    const card = createProductCard(product);
+                    // (PERBAIKAN) Logika render baru
+                    let card;
+                    if (isCardViewCollapsed) {
+                        card = createCompactCard(product);
+                    } else {
+                        card = createFullCard(product);
+                    }
                     productList.appendChild(card);
                 });
             }
@@ -1376,6 +1415,13 @@
                 document.getElementById('akun').value = product.akun;
                 document.getElementById('password').value = product.password;
                 document.getElementById('catatan').value = product.catatan;
+                
+                // (BARU) Tampilkan fitur Gemini
+                geminiFeatureContainer.classList.remove('hidden');
+                geminiLoading.classList.add('hidden');
+                geminiResponseContainer.classList.add('hidden');
+                geminiResponseContainer.innerHTML = '';
+                
             } else {
                 // Mode Tambah
                 productForm.reset(); 
@@ -1389,6 +1435,11 @@
                 productForm.querySelectorAll('.input-wrapper input, .input-wrapper textarea').forEach(input => {
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                 });
+                
+                // (BARU) Sembunyikan fitur Gemini
+                geminiFeatureContainer.classList.add('hidden');
+                geminiLoading.classList.add('hidden');
+                geminiResponseContainer.innerHTML = '';
             }
 
             // ... (trigger 'input' event untuk tombol 'x' - TETAP SAMA) ...
@@ -1411,6 +1462,11 @@
             tipeProdukLainnyaContainer.classList.add('hidden');
             emailLainnyaContainer.classList.add('hidden');
             periodeLanggananLainnyaContainer.classList.add('hidden');
+            
+            // (BARU) Sembunyikan fitur Gemini
+            geminiFeatureContainer.classList.add('hidden');
+            geminiLoading.classList.add('hidden');
+            geminiResponseContainer.innerHTML = '';
         }
         
         function openConfirmDeleteModal(id, name) {
@@ -1489,8 +1545,121 @@
             }
         }
 
+        // --- 6. Logika Gemini API (BARU) ---
 
-        // --- 6. Event Listeners ---
+        /**
+         * (BARU) Fungsi inti untuk memanggil Gemini API dengan exponential backoff.
+         */
+        async function callGeminiAPI(userQuery, systemInstruction, maxRetries = 3) {
+            const apiKey = ""; // Biarkan kosong, akan di-handle oleh environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemInstruction }]
+                },
+            };
+
+            let delay = 1000; // 1 detik
+            for (let i = 0; i <= maxRetries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        // Jika status bukan OK, coba lagi
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        return candidate.content.parts[0].text; // Sukses
+                    } else {
+                        // Jika respon OK tapi data tidak ada
+                        throw new Error("Respon API tidak valid atau kosong.");
+                    }
+                } catch (error) {
+                    console.warn(`Upaya API ${i + 1} gagal:`, error.message);
+                    if (i === maxRetries) {
+                        // Jika sudah mencapai batas percobaan
+                        throw new Error("Gagal menghubungi API setelah beberapa kali percobaan.");
+                    }
+                    // Tunggu sebelum mencoba lagi
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2; // Double delay untuk backoff
+                }
+            }
+        }
+
+        /**
+         * (BARU) Menangani klik tombol Gemini untuk mendapatkan info
+         */
+        async function handleGeminiRequest() {
+            geminiLoading.classList.remove('hidden');
+            geminiResponseContainer.classList.add('hidden');
+            geminiResponseContainer.innerHTML = '';
+
+            // Ambil data dari form
+            const namaProduk = document.getElementById('namaProduk').value;
+            const tipeProduk = document.getElementById('tipeProduk').value;
+            const tipeProdukLainnya = document.getElementById('tipeProdukLainnya').value;
+
+            let tipe = tipeProduk;
+            if (tipe === 'Lainnya') {
+                tipe = tipeProdukLainnya.trim() || 'Produk Digital'; // Default jika 'Lainnya' tapi kosong
+            }
+            if (tipe === '') {
+                tipe = 'Produk Digital'; // Default jika tidak dipilih
+            }
+
+
+            if (!namaProduk) {
+                geminiLoading.classList.add('hidden');
+                geminiResponseContainer.innerHTML = '<p class="text-red-600 dark:text-red-400">Harap isi Nama Produk terlebih dahulu.</p>';
+                geminiResponseContainer.classList.remove('hidden');
+                return;
+            }
+
+            // Siapkan prompt untuk Gemini
+            const systemPrompt = "Anda adalah asisten yang sangat membantu, kreatif, dan ahli dalam produktivitas digital. Jawab selalu dalam Bahasa Indonesia dengan format yang rapi.";
+            const userQuery = `Saya memiliki produk digital bernama "${namaProduk}". Tipe produk ini adalah "${tipe}". 
+    
+Tolong berikan saya 2 hal:
+1.  Tiga (3) tips singkat dan praktis tentang cara terbaik untuk belajar atau mendapatkan nilai maksimal dari produk ini.
+2.  Satu (1) ide atau fitur tambahan yang mungkin relevan atau bisa diintegrasikan dengan produk ini untuk meningkatkan nilainya.
+
+Format jawaban Anda dengan jelas menggunakan poin-poin.`;
+
+            try {
+                // Panggil API
+                const responseText = await callGeminiAPI(userQuery, systemPrompt);
+                
+                // Format sederhana: ganti baris baru dengan <br> dan sanitasi
+                const formattedResponse = responseText
+                    .replace(/</g, "&lt;") // Sanitasi dasar
+                    .replace(/>/g, "&gt;")
+                    .replace(/\n/g, '<br>');
+
+                geminiLoading.classList.add('hidden');
+                geminiResponseContainer.innerHTML = formattedResponse;
+                geminiResponseContainer.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                geminiLoading.classList.add('hidden');
+                geminiResponseContainer.innerHTML = `<p class="text-red-600 dark:text-red-400">Maaf, terjadi kesalahan saat menghubungi AI. Silakan coba lagi nanti.</p>`;
+                geminiResponseContainer.classList.remove('hidden');
+            }
+        }
+
+
+        // --- 7. Event Listeners --- (Sebelumnya 6)
         
         // --- Listener Auth ---
         // (Tidak ada perubahan)
@@ -1638,31 +1807,70 @@
             }
         });
 
-        // Event delegation untuk kartu produk
-        // (Tidak ada perubahan)
+        // (PERBAIKAN BESAR) Event delegation untuk kartu produk (DIREVISI)
         productList.addEventListener('click', (e) => {
             const editBtn = e.target.closest('.btn-edit');
             const deleteBtn = e.target.closest('.btn-delete');
             const togglePassBtn = e.target.closest('.btn-toggle-password');
+            const compactCard = e.target.closest('.compact-card-clickable');
+            const fullCard = e.target.closest('.manually-opened');
+
+            // Prioritas #1: Tombol Edit (selalu memuat modal)
             if (editBtn) {
                 const id = editBtn.dataset.id;
                 loadProductForEdit(id);
+                return;
             }
+            
+            // Prioritas #2: Tombol Hapus (selalu memuat modal)
             if (deleteBtn) {
                 const id = deleteBtn.dataset.id;
                 const name = deleteBtn.dataset.name;
                 openConfirmDeleteModal(id, name);
+                return;
             }
+            
+            // Prioritas #3: Tombol Password (hanya toggle)
             if (togglePassBtn) {
                 togglePasswordVisibility(togglePassBtn);
+                return;
+            }
+            
+            // Prioritas #4: Link (jangan lakukan apa-apa, biarkan browser)
+            if (e.target.tagName === 'A' || e.target.closest('A')) {
+                return;
+            }
+
+            // Prioritas #5: Klik kartu ringkas (untuk MEMBUKA)
+            if (compactCard) {
+                const id = compactCard.dataset.id;
+                const product = allProducts.find(p => p.id === id);
+                if (!product) return;
+                
+                const newFullCard = createFullCard(product);
+                newFullCard.classList.add('manually-opened'); // Tambahkan marker
+                compactCard.replaceWith(newFullCard);
+                return;
+            }
+            
+            // Prioritas #6: Klik kartu penuh yang dibuka manual (untuk MENUTUP)
+            if (fullCard) {
+                const id = fullCard.dataset.id;
+                const product = allProducts.find(p => p.id === id);
+                if (!product) return;
+                
+                const newCompactCard = createCompactCard(product);
+                fullCard.replaceWith(newCompactCard);
+                return;
             }
         });
         
-        // (MODIFIKASI) Event delegation untuk tombol di dalam form (toggle password DAN clear)
+        // (MODIFIKASI) Event delegation untuk tombol di dalam form (toggle password, clear, DAN GEMINI)
         formModal.addEventListener('click', (e) => {
             // (Tidak ada perubahan)
             const togglePassBtn = e.target.closest('.btn-toggle-password');
             const clearBtn = e.target.closest('.clear-btn');
+            const geminiBtn = e.target.closest('#gemini-info-btn'); // (BARU)
 
             if (togglePassBtn) {
                 togglePasswordVisibility(togglePassBtn);
@@ -1679,6 +1887,13 @@
                     input.focus();
                 }
                 return; 
+            }
+            
+            // (BARU) Menangani klik tombol Gemini
+            if (geminiBtn) {
+                e.preventDefault(); // Pastikan tidak submit form
+                handleGeminiRequest();
+                return;
             }
         });
 
