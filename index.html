@@ -3,112 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BELIANKU</title>
+    <title>IKMAL PURCHASE</title>
+    <!-- Memuat Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- (PERUBAHAN) Font Import (Tetap terpisah) -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
     </style>
     
+    <!-- (PERUBAHAN BESAR) Konfigurasi Tailwind diganti ke tema iOS/Glass -->
     <script>
     tailwind.config = {
         darkMode: 'class', 
         theme: {
             extend: {
+                // (BARU) Menambahkan 'blur' kustom untuk efek kaca yang lebih kuat
+                blur: {
+                    '4xl': '80px',
+                    '5xl': '100px',
+                },
                 fontFamily: {
-                    /* (PENTING) Ini tetap ada untuk ngasih tau Tailwind 
-                       bahwa 'font-sans' itu 'Space Grotesk' */
                     sans: ['Space Grotesk', 'sans-serif'], 
                 },
+                // (PERUBAHAN) Palet Warna iOS / GitHub
                 colors: {
-                    /* Tema Terang */
-                    'notion-white': '#FFFFFF',
-                    'notion-bg': '#FFFFFF',
-                    'notion-card': '#FFFFFF',
-                    'notion-border': '#E3E3E3',
-                    'notion-text': '#191919',
-                    'notion-text-subtle': '#7F7F7F',
-                    'notion-primary': '#2F2F2F',
+                    /* Tema Terang (Light Mode) */
+                    'notion-bg': '#F3F4F6', // (gray-100)
+                    'notion-card': '#FFFFFF', // Warna dasar kaca
+                    'notion-border': '#000000', // Warna dasar border (diberi opacity nanti)
+                    'notion-text': '#1F2937', // (gray-800)
+                    'notion-text-subtle': '#6B7280', // (gray-500)
+                    'notion-primary': '#2563EB', // (blue-600)
 
-                    /* Tema Gelap (True Black) */
-                    'notion-bg-dark': '#000000',
-                    'notion-card-dark': '#000000',
-                    'notion-border-dark': '#333333', // Border abu-abu gelap
-                    
-                    /* Font */
-                    'notion-text-dark': '#E3E3E3',
-                    'notion-text-subtle-dark': '#7F7F7F',
-                    'notion-primary-dark': '#E3E3E3'
+                    /* Tema Gelap (Dark Mode) */
+                    'notion-bg-dark': '#0D1117', // Latar belakang GitHub Dark
+                    'notion-card-dark': '#1E242E', // Warna dasar kaca gelap (dari rgba(30, 36, 46))
+                    'notion-border-dark': '#FFFFFF', // Warna dasar border (diberi opacity nanti)
+                    'notion-text-dark': '#E6EDF3', // Teks GitHub Dark
+                    'notion-text-subtle-dark': '#7D8590', // Teks sekunder GitHub Dark
+                    'notion-primary-dark': '#58A6FF', // Aksen GitHub Dark (Biru)
                 }
             },
         }
     }
     </script>
     
+    <!-- (PERUBAHAN) Blok style @apply disesuaikan untuk Glassmorphism -->
     <style type="text/tailwindcss">
         /* Import font sudah dipindah ke atas */
         
         body {
+            /* (DIUBAH) Transisi untuk semua elemen kaca */
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Style .notion-input (ini pakai @apply, jadi harus di sini) */
+        /* (PERUBAHAN BESAR) Style .notion-input untuk efek kaca */
         .notion-input {
-            @apply w-full px-3 py-2 bg-notion-white dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-md shadow-sm placeholder-notion-text-subtle dark:placeholder-notion-text-subtle-dark focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-notion-text dark:text-notion-text-dark;
+            @apply w-full px-3 py-2 
+                   bg-notion-card/30 dark:bg-notion-card-dark/40 /* (Kaca) BG + Opacity */
+                   border border-notion-border/10 dark:border-notion-border-dark/10 /* (Kaca) Border + Opacity */
+                   backdrop-blur-lg /* (Kaca) Efek Blur */
+                   rounded-lg shadow-sm /* (iOS) Sudut lebih bulat */
+                   placeholder-notion-text-subtle dark:placeholder-notion-text-subtle-dark 
+                   focus:outline-none focus:ring-2 focus:ring-notion-primary dark:focus:ring-notion-primary-dark 
+                   text-notion-text dark:text-notion-text-dark;
         }
 
         /* Style untuk <option> di dalam <select> saat dark mode */
         html.dark select.notion-input option {
-            background-color: #000000; /* notion-card-dark */
-            color: #E3E3E3; /* notion-text-dark */
+            background-color: #0D1117; /* notion-bg-dark (agar pekat) */
+            color: #E6EDF3; /* notion-text-dark */
         }
 
-        /* Bug Autofill Browser (Mode Terang) */
+        /* Bug Autofill (Mode Terang) */
         .notion-input:-webkit-autofill,
         .notion-input:-webkit-autofill:hover,
         .notion-input:-webkit-autofill:focus,
         .notion-input:-webkit-autofill:active {
-            -webkit-text-fill-color: #191919 !important; 
-            -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
+            -webkit-text-fill-color: #1F2937 !important; /* notion-text */
+            -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset !important; /* notion-card */
             box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
-            caret-color: #191919 !important;
+            caret-color: #1F2937 !important;
         }
         
-        /* Bug Autofill Browser (Mode Gelap) */
+        /* Bug Autofill (Mode Gelap) */
         html.dark .notion-input:-webkit-autofill,
         html.dark .notion-input:-webkit-autofill:hover,
         html.dark .notion-input:-webkit-autofill:focus,
         html.dark .notion-input:-webkit-autofill:active {
-            -webkit-text-fill-color: #E3E3E3 !important;
-            -webkit-box-shadow: 0 0 0px 1000px #000000 inset !important; /* Cocok dgn bg-dark */
-            box-shadow: 0 0 0px 1000px #000000 inset !important;
-            caret-color: #E3E3E3 !important;
+            -webkit-text-fill-color: #E6EDF3 !important; /* notion-text-dark */
+            -webkit-box-shadow: 0 0 0px 1000px #1E242E inset !important; /* (DIUBAH) notion-card-dark */
+            box-shadow: 0 0 0px 1000px #1E242E inset !important;
+            caret-color: #E6EDF3 !important;
         }
         
-        /* Sisa style .btn, .menu-item, dll. (harus tetap di sini karena pakai @apply) */
+        /* --- Tombol --- */
         .btn {
-            @apply px-4 py-2 rounded-md font-medium text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-notion-bg-dark;
+            @apply px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-notion-bg-dark;
         }
         .btn-primary {
-            @apply btn bg-notion-primary text-notion-white dark:bg-notion-primary-dark dark:text-notion-bg-dark hover:bg-opacity-90 dark:hover:bg-opacity-90 focus:ring-notion-primary;
+            /* (DIUBAH) Tombol utama kini pakai warna aksen */
+            @apply btn bg-notion-primary text-white 
+                   dark:bg-notion-primary-dark dark:text-notion-bg-dark 
+                   hover:bg-opacity-90 dark:hover:bg-opacity-90 
+                   focus:ring-notion-primary dark:focus:ring-notion-primary-dark;
         }
         .btn-secondary {
-            @apply btn bg-notion-border text-notion-text dark:bg-notion-border-dark dark:text-notion-text-dark hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-gray-400;
+            /* (PERUBAHAN BESAR) Tombol sekunder kini pakai efek kaca */
+            @apply btn 
+                   bg-notion-card/30 dark:bg-notion-card-dark/40 /* (Kaca) BG + Opacity */
+                   border border-notion-border/10 dark:border-notion-border-dark/10 /* (Kaca) Border + Opacity */
+                   backdrop-blur-lg /* (Kaca) Efek Blur */
+                   text-notion-text dark:text-notion-text-dark 
+                   hover:bg-notion-border/5 dark:hover:bg-notion-border-dark/5 
+                   focus:ring-gray-400;
         }
         .btn-danger {
             @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
         }
         .btn-icon {
-            @apply p-2 rounded-md text-notion-text-subtle hover:bg-gray-100 dark:text-notion-text-subtle-dark dark:hover:bg-notion-card-dark;
+            /* (DIUBAH) Tombol ikon kini pakai efek kaca */
+            @apply p-2 rounded-lg text-notion-text-subtle dark:text-notion-text-subtle-dark
+                   hover:bg-notion-border/10 dark:hover:bg-notion-border-dark/10
+                   transition-colors duration-200;
         }
         .btn-link {
-            @apply text-sm text-blue-600 dark:text-blue-400 hover:underline;
+            @apply text-sm text-notion-primary dark:text-notion-primary-dark hover:underline;
         }
         
         .hidden {
             display: none;
         }
 
+        /* --- Sidebar & Menu --- */
         #sidebar {
             transition-property: transform;
             transition-timing-function: ease-in-out;
@@ -123,10 +151,14 @@
         }
         
         .menu-item {
-            @apply block w-full px-4 py-3 rounded-lg text-notion-text dark:text-notion-text-dark hover:bg-notion-border dark:hover:bg-notion-border-dark font-medium transition-colors text-left;
+            /* (DIUBAH) Menu item kini lebih transparan */
+            @apply block w-full px-4 py-3 rounded-lg text-notion-text dark:text-notion-text-dark 
+                   hover:bg-notion-border/10 dark:hover:bg-notion-border-dark/10 
+                   font-medium transition-colors text-left;
         }
         .menu-item.active-menu-item {
-            @apply bg-notion-border dark:bg-notion-border-dark font-semibold;
+            /* (DIUBAH) Menu aktif lebih terlihat */
+            @apply bg-notion-border/10 dark:bg-notion-border-dark/10 font-semibold;
         }
         
         .manually-opened {
