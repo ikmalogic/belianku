@@ -756,6 +756,7 @@
                 <div>
                     <label for="link-akses" class="block text-sm font-medium mb-1">Link Akses</label>
                     <div class="relative input-wrapper">
+                        <!-- Input URL di modal tetap terlihat penuh -->
                         <input type="url" id="link-akses" class="notion-input pr-10" required placeholder="https://... (masukkan URL lengkap)">
                         <button type="button" class="clear-btn absolute inset-y-0 right-0 px-3 flex items-center text-notion-text-subtle hidden" aria-label="Hapus isian">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -1838,6 +1839,21 @@
                 temp.textContent = str;
                 return temp.innerHTML;
             };
+            
+            // Fungsi untuk mendapatkan domain dari URL
+            const getDomain = (url) => {
+                try {
+                    const parsedUrl = new URL(url);
+                    // Hapus 'www.' jika ada dan ambil hostname
+                    return parsedUrl.hostname.replace(/^www\./, '');
+                } catch (e) {
+                    // Jika URL tidak valid, tampilkan string kosong atau pesan default
+                    return ''; 
+                }
+            };
+            
+            const domainName = getDomain(link.linkAkses || '');
+
 
             // REVISION: Menggunakan class 'uppercase' untuk judul
             card.className = "glass-card overflow-hidden p-4 space-y-4";
@@ -1869,8 +1885,7 @@
                 <div class="flex justify-between items-start">
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-bold truncate uppercase">${sanitize(link.namaTools || 'Tanpa Judul')}</h3>
-                        <!-- REVISION: URL diubah menjadi teks kecil dan subtil -->
-                        <p class="text-xs text-notion-text-subtle dark:text-notion-text-subtle-dark truncate">${sanitize(link.linkAkses)}</p>
+                        <!-- REVISION: Baris URL Dihapus sepenuhnya -->
                     </div>
                     <div class="flex-shrink-0 ml-4 flex gap-2"> <!-- Added flex gap-2 for better button layout -->
                         <button class="btn-icon btn-edit-link" data-id="${link.id}" aria-label="Edit link">
@@ -2449,6 +2464,7 @@
                 linkModalTitle.textContent = "Edit Link";
                 document.getElementById('link-id').value = link.id;
                 document.getElementById('link-nama').value = link.namaTools;
+                // REVISION: Link Akses diperlihatkan di modal edit
                 document.getElementById('link-akses').value = link.linkAkses;
                 document.getElementById('link-tag').value = link.tags || ''; // (PERBAIKAN BARU)
                 document.getElementById('link-catatan').value = link.catatan;
