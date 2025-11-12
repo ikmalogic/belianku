@@ -60,13 +60,21 @@
 
         /* === PERUBAHAN UTAMA UNTUK KARTU TIMBUL (GLASSMORPHISM) === */
         .glass-card {
-            /* Warna latar belakang dengan transparansi */
-            @apply bg-notion-card/80 dark:bg-notion-card-dark/80 
-                   border border-notion-border/10 dark:border-notion-border-dark 
-                   rounded-xl shadow-xl; /* Shadow ditingkatkan untuk kedalaman */
-            /* Efek blur di belakang kartu (Glassmorphism) */
+            /* Default/Light Mode: Semi-transparent white + Blur */
+            @apply bg-notion-card/80 border border-notion-border/10 rounded-xl shadow-xl transition-colors duration-300;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+        }
+        
+        /* REVISION: Dark Mode Override (Matte Black Doff) */
+        html.dark .glass-card {
+            /* Background Hitam Doff Solid (100% opacity) */
+            background-color: #161616; /* Menggunakan notion-card-dark */
+            border-color: #2C2C2C; /* Menggunakan notion-border-dark */
+            
+            /* Menghapus backdrop filter untuk efek matte */
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
         }
         
         /* Menggunakan ulang kelas dasar untuk kompatibilitas */
@@ -1384,11 +1392,11 @@
                 return temp.innerHTML;
             };
 
-            // REVISION: Menggunakan glass-card
+            // REVISION: Menggunakan class 'uppercase' untuk judul
             card.className = "glass-card overflow-hidden p-4 flex justify-between items-center compact-card-clickable cursor-pointer transition-colors hover:bg-notion-border dark:hover:bg-notion-border-dark";
             
             card.innerHTML = `
-                <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
+                <h3 class="text-lg font-bold uppercase">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
                 <div class="flex-shrink-0">
                     <button class="btn-icon btn-edit" data-id="${product.id}" aria-label="Edit produk">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -1514,7 +1522,7 @@
                             ${tipeTransaksiHTML} <!-- Badge Dinamis -->
                             ${tipeProdukHTML}
                         </div>
-                        <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
+                        <h3 class="text-lg font-bold uppercase">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
                         ${ownerHTML}
                     </div>
                     <div class="flex-shrink-0">
@@ -1538,7 +1546,7 @@
                 <div class="border-t border-notion-border dark:border-notion-border-dark pt-3 mt-3 space-y-2">
                     <h4 class="font-medium">Info Akun:</h4>
                     <p class="text-sm"><strong>Akun:</strong> ${sanitize(product.akun) || 'N/A'}</p>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 password-group-display">
                         <strong class="text-sm">Password:</strong>
                         <input type="password" value="${sanitize(product.password) || ''}" class="password-field-display notion-input text-sm p-1 flex-1" readonly>
                         <button class="btn-icon btn-toggle-password" aria-label="Tampilkan password">
@@ -1831,7 +1839,7 @@
                 return temp.innerHTML;
             };
 
-            // REVISION: Menggunakan glass-card
+            // REVISION: Menggunakan class 'uppercase' untuk judul
             card.className = "glass-card overflow-hidden p-4 space-y-4";
             
             const catatanHTML = link.catatan ? `
@@ -1860,7 +1868,7 @@
             card.innerHTML = `
                 <div class="flex justify-between items-start">
                     <div class="flex-1 min-w-0">
-                        <h3 class="text-lg font-bold truncate">${sanitize(link.namaTools || 'Tanpa Judul')}</h3>
+                        <h3 class="text-lg font-bold truncate uppercase">${sanitize(link.namaTools || 'Tanpa Judul')}</h3>
                         <!-- REVISION: URL diubah menjadi teks kecil dan subtil -->
                         <p class="text-xs text-notion-text-subtle dark:text-notion-text-subtle-dark truncate">${sanitize(link.linkAkses)}</p>
                     </div>
@@ -2066,7 +2074,7 @@
                 return temp.innerHTML;
             };
 
-            // REVISION: Menggunakan glass-card
+            // REVISION: Menggunakan class 'uppercase' untuk judul
             card.className = "glass-card overflow-hidden p-4";
             
             const catatanHTML = password.catatan ? `
@@ -2079,7 +2087,7 @@
             card.innerHTML = `
                 <div class="flex justify-between items-start mb-3">
                     <div class="flex-1 min-w-0">
-                        <h3 class="text-lg font-bold truncate">${sanitize(password.namaSitus || 'Tanpa Judul')}</h3>
+                        <h3 class="text-lg font-bold truncate uppercase">${sanitize(password.namaSitus || 'Tanpa Judul')}</h3>
                         <p class="text-sm text-notion-text-subtle dark:text-notion-text-subtle-dark truncate">${sanitize(password.username)}</p>
                     </div>
                     <div class="flex-shrink-0 ml-4">
@@ -2092,7 +2100,7 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 password-group-display">
                     <strong class="text-sm">Password:</strong>
                     <input type="password" value="${sanitize(password.password || '')}" class="password-field-display notion-input text-sm p-1 flex-1" readonly>
                     <button class="btn-icon btn-toggle-password" aria-label="Tampilkan password">
@@ -2522,12 +2530,26 @@
 
 
         
+        // REVISION: Fungsi diperbaiki untuk mencari input di dalam grup
         function togglePasswordVisibility(button) {
-            // (Tidak ada perubahan)
-            const input = button.closest('div').querySelector('input[type="password"], input[type="text"]');
-            if (!input) return;
+            // Cari elemen parent terdekat yang membungkus input dan tombol (contoh: .input-wrapper di modal, .password-group-display di card)
+            const parentGroup = button.closest('.input-wrapper') || button.closest('.password-group-display');
+            if (!parentGroup) {
+                console.error("Gagal menemukan grup password.");
+                return;
+            }
+            
+            // Cari input password di dalam grup tersebut
+            const input = parentGroup.querySelector('input[type="password"], input[type="text"]');
+            if (!input) {
+                console.error("Gagal menemukan input password.");
+                return;
+            }
+            
+            // Cari ikon di dalam tombol
             const iconShow = button.querySelector('.toggle-pass-icon-show');
             const iconHide = button.querySelector('.toggle-pass-icon-hide');
+
             if (input.type === 'password') {
                 input.type = 'text';
                 iconShow.classList.add('hidden');
@@ -2859,7 +2881,9 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
             }
             
             // Prioritas #3: Tombol Password (hanya toggle)
+            // REVISION: Memastikan tombol toggle di card ditangani di sini
             if (togglePassBtn) {
+                e.preventDefault(); // Mencegah aksi kartu jika di mode compact
                 togglePasswordVisibility(togglePassBtn);
                 return;
             }
@@ -2932,7 +2956,9 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
                 return;
             }
             
+            // REVISION: Memastikan tombol toggle di card ditangani di sini
             if (togglePassBtn) {
+                e.preventDefault();
                 togglePasswordVisibility(togglePassBtn);
                 return;
             }
@@ -2946,7 +2972,9 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
             const clearBtn = e.target.closest('.clear-btn');
             const geminiBtn = e.target.closest('#gemini-info-btn'); // (BARU)
 
-            if (togglePassBtn) {
+            // REVISION: Menangani toggle password di modal
+            if (togglePassBtn && (e.target.closest('#form-modal') || e.target.closest('#password-form-modal'))) {
+                e.preventDefault(); 
                 togglePasswordVisibility(togglePassBtn);
                 return; 
             }
@@ -2976,4 +3004,3 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
     </script>
 </body>
 </html>
-
