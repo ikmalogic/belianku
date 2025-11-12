@@ -30,7 +30,7 @@
                 colors: {
                     /* Tema Terang (Light Mode) */
                     'notion-bg': '#F3F4F6', // (gray-100)
-                    'notion-card': '#FFFFFF', // Warna dasar kaca
+                    'notion-card': '#FFFFFF', // Warna dasar kartu
                     'notion-border': '#000000', // Warna dasar border (diberi opacity nanti)
                     'notion-text': '#1F2937', // (gray-800)
                     'notion-text-subtle': '#6B7280', // (gray-500)
@@ -58,7 +58,23 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* (PERUBAHAN BESAR) Style .notion-input - Menghapus efek Kaca */
+        /* === PERUBAHAN UTAMA UNTUK KARTU TIMBUL (GLASSMORPHISM) === */
+        .glass-card {
+            /* Warna latar belakang dengan transparansi */
+            @apply bg-notion-card/80 dark:bg-notion-card-dark/80 
+                   border border-notion-border/10 dark:border-notion-border-dark 
+                   rounded-xl shadow-xl; /* Shadow ditingkatkan untuk kedalaman */
+            /* Efek blur di belakang kartu (Glassmorphism) */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        /* Menggunakan ulang kelas dasar untuk kompatibilitas */
+        .compact-card-clickable {
+            @apply glass-card;
+        }
+
+        /* --- Input fields tetap solid --- */
         .notion-input {
             @apply w-full px-3 py-2 
                    bg-notion-card /* L-Mode solid */
@@ -140,6 +156,8 @@
 
         /* --- Sidebar & Menu --- */
         #sidebar {
+             /* Sidebar dan Modal kini menggunakan glass-card untuk konsistensi */
+            @apply glass-card shadow-2xl;
             transition-property: transform;
             transition-timing-function: ease-in-out;
             transition-duration: 300ms;
@@ -173,7 +191,8 @@
 
     <!-- === SIDEBAR BARU === -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-0 hidden"></div>
-    <nav id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-notion-card dark:bg-notion-card-dark shadow-lg transform -translate-x-full">
+    <!-- REVISION: Menggunakan glass-card untuk Sidebar -->
+    <nav id="sidebar" class="fixed top-0 left-0 h-full w-72 glass-card transform -translate-x-full">
         <div class="p-6 h-full flex flex-col">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-lg font-semibold">Menu</h2>
@@ -199,10 +218,10 @@
                         My Password
                     </button>
                 </li>
-                <!-- (PERBAIKAN) Menu My Link ditambahkan -->
+                <!-- (PERBAIKAN) Menu My Link diubah menjadi My Tools -->
                 <li>
                     <button class="menu-item" data-action="my-link">
-                        My Link
+                        My Tools
                     </button>
                 </li>
                 <!-- (AKHIR PERBAIKAN) -->
@@ -267,7 +286,8 @@
         </header>
 
         <!-- === KONTROL AUTENTIKASI (BARU) === -->
-        <div id="auth-container" class="max-w-md mx-auto my-10 p-6 bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm hidden">
+        <!-- REVISION: Menggunakan glass-card untuk Auth Container -->
+        <div id="auth-container" class="max-w-md mx-auto my-10 p-6 glass-card hidden">
             
             <!-- Form Login -->
             <form id="login-form" class="">
@@ -324,7 +344,7 @@
                         <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path>
                         <path fill="#FF3D00" d="M6.306 14.691L22.99 21.905L17.509 10.22C15.56 7.903 12.019 6.306 8.327 7.151C5.071 7.892 2.348 10.82 2.022 14.366c-.114 1.251.272 2.493.98 3.491l3.304-3.166z"></path>
                         <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path>
-                        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-0.792 2.237-2.231 4.166-4.087 5.574l6.19 5.238C39.999 36.661 44 31.138 44 24c0-1.341-.138-2.65-.389-3.917z"></path>
+                        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-0.792 2.237-2.231 4.166-4.087 5.574l6.19-5.238C39.999 36.661 44 31.138 44 24c0-1.341-.138-2.65-.389-3.917z"></path>
                     </svg>
                     Masuk dengan Google
                 </button>
@@ -359,7 +379,7 @@
             <div id="add-link-btn-wrapper" class="mb-6 hidden">
                 <button id="add-link-btn" class="btn-primary w-full md:w-auto flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101"></path></svg>
-                    Tambah Link Baru
+                    Tambah Tools Baru
                 </button>
             </div>
 
@@ -414,12 +434,12 @@
             <div id="link-content" class="hidden">
                 <!-- Status Loading Link -->
                 <div id="loading-state-link" class="text-center text-notion-text-subtle py-10 hidden">
-                    <p>Memuat link...</p>
+                    <p>Memuat tools...</p>
                 </div>
                 
                 <!-- Status Kosong Link -->
                 <div id="empty-state-link" class="text-center text-notion-text-subtle py-10 border-2 border-dashed border-notion-border dark:border-notion-border-dark rounded-lg hidden">
-                    <p>Belum ada link yang disimpan.</p>
+                    <p>Belum ada tools yang disimpan.</p>
                     <p class="text-sm">Klik "Tambah Link Baru" untuk memulai.</p>
                 </div>
 
@@ -439,7 +459,8 @@
     <!-- === MODAL PRODUK === -->
     <!-- ====================================================================== -->
     <div id="form-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 hidden">
-        <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <!-- REVISION: Menggunakan glass-card untuk Modal -->
+        <div class="glass-card rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <form id="product-form" class="p-6 space-y-4">
                 
                 <div class="flex justify-between items-center mb-4">
@@ -684,7 +705,8 @@
     
     <!-- Modal Konfirmasi Hapus Produk -->
     <div id="confirm-delete-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 hidden">
-         <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-sm p-6">
+         <!-- REVISION: Menggunakan glass-card untuk Konfirmasi Modal -->
+         <div class="glass-card rounded-lg shadow-xl w-full max-w-sm p-6">
             <h3 class="text-lg font-semibold mb-2">Hapus Produk?</h3>
             <p class="text-notion-text-subtle dark:text-notion-text-subtle-dark mb-6">Apakah Anda yakin ingin menghapus produk <strong id="product-name-to-delete"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
             <div class="flex justify-end gap-3">
@@ -698,11 +720,12 @@
     <!-- === MODAL LINK (BARU) === -->
     <!-- ====================================================================== -->
     <div id="link-form-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 hidden">
-        <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <!-- REVISION: Menggunakan glass-card untuk Modal Link -->
+        <div class="glass-card rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <form id="link-form" class="p-6 space-y-4">
                 
                 <div class="flex justify-between items-center mb-4">
-                    <h2 id="link-modal-title" class="text-xl font-semibold">Tambah Link Baru</h2>
+                    <h2 id="link-modal-title" class="text-xl font-semibold">Tambah Tools Baru</h2>
                     <button type="button" id="link-modal-close-btn" class="btn-icon" aria-label="Tutup modal">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
@@ -764,7 +787,8 @@
     
     <!-- Modal Konfirmasi Hapus Link (BARU) -->
     <div id="confirm-delete-link-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 hidden">
-         <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-sm p-6">
+         <!-- REVISION: Menggunakan glass-card untuk Konfirmasi Modal Link -->
+         <div class="glass-card rounded-lg shadow-xl w-full max-w-sm p-6">
             <h3 class="text-lg font-semibold mb-2">Hapus Link?</h3>
             <p class="text-notion-text-subtle dark:text-notion-text-subtle-dark mb-6">Apakah Anda yakin ingin menghapus link <strong id="link-name-to-delete"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
             <div class="flex justify-end gap-3">
@@ -778,7 +802,8 @@
     <!-- === MODAL PASSWORD (PERBAIKAN BARU) === -->
     <!-- ====================================================================== -->
     <div id="password-form-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 hidden">
-        <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <!-- REVISION: Menggunakan glass-card untuk Modal Password -->
+        <div class="glass-card rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <form id="password-form" class="p-6 space-y-4">
                 
                 <div class="flex justify-between items-center mb-4">
@@ -846,7 +871,8 @@
     
     <!-- Modal Konfirmasi Hapus Password (PERBAIKAN BARU) -->
     <div id="confirm-delete-password-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 hidden">
-         <div class="bg-notion-card dark:bg-notion-card-dark rounded-lg shadow-xl w-full max-w-sm p-6">
+         <!-- REVISION: Menggunakan glass-card untuk Konfirmasi Modal Password -->
+         <div class="glass-card rounded-lg shadow-xl w-full max-w-sm p-6">
             <h3 class="text-lg font-semibold mb-2">Hapus Password?</h3>
             <p class="text-notion-text-subtle dark:text-notion-text-subtle-dark mb-6">Apakah Anda yakin ingin menghapus password untuk <strong id="password-name-to-delete"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
             <div class="flex justify-end gap-3">
@@ -1276,7 +1302,7 @@
                 
             } else if (newView === 'my-link') { // (PERBAIKAN BARU)
                 // Ini adalah Tampilan Link
-                pageTitle.textContent = "My Link";
+                pageTitle.textContent = "My Tools"; // REVISI: Judul diubah menjadi "My Tools"
                 linkContent.classList.remove('hidden');
                 addLinkBtnWrapper.classList.remove('hidden');
                 searchToggleBtn.classList.remove('hidden'); // (PERBAIKAN) Tampilkan search
@@ -1358,7 +1384,8 @@
                 return temp.innerHTML;
             };
 
-            card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden p-4 flex justify-between items-center compact-card-clickable cursor-pointer transition-colors hover:bg-notion-border dark:hover:bg-notion-border-dark";
+            // REVISION: Menggunakan glass-card
+            card.className = "glass-card overflow-hidden p-4 flex justify-between items-center compact-card-clickable cursor-pointer transition-colors hover:bg-notion-border dark:hover:bg-notion-border-dark";
             
             card.innerHTML = `
                 <h3 class="text-lg font-bold">${sanitize(product.namaProduk || 'Tanpa Judul')}</h3>
@@ -1388,7 +1415,8 @@
                 return temp.innerHTML;
             };
 
-            card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden";
+            // REVISION: Menggunakan glass-card
+            card.className = "glass-card overflow-hidden";
             
             // Fungsi utilitas format tanggal
             const formatDate = (dateString) => {
@@ -1803,10 +1831,11 @@
                 return temp.innerHTML;
             };
 
-            card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden p-4";
+            // REVISION: Menggunakan glass-card
+            card.className = "glass-card overflow-hidden p-4 space-y-4";
             
             const catatanHTML = link.catatan ? `
-                <div class="border-t border-notion-border dark:border-notion-border-dark pt-3 mt-3">
+                <div class="border-t border-notion-border dark:border-notion-border-dark pt-3">
                      <h4 class="font-medium mb-1">Catatan:</h4>
                      <p class="text-sm whitespace-pre-wrap">${sanitize(link.catatan)}</p>
                 </div>
@@ -1817,7 +1846,7 @@
             if (link.tags && typeof link.tags === 'string' && link.tags.trim() !== '') {
                 const tagsArray = link.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
                 if (tagsArray.length > 0) {
-                    tagsHTML = '<div class="flex flex-wrap gap-2 mt-3">'; // Add margin-top
+                    tagsHTML = '<div class="flex flex-wrap gap-2 mb-2">'; // Added mb-2 for spacing
                     tagsHTML += tagsArray.map(tag => `
                         <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200 dark:bg-indigo-800 dark:text-indigo-300">
                             ${sanitize(tag)}
@@ -1832,11 +1861,10 @@
                 <div class="flex justify-between items-start">
                     <div class="flex-1 min-w-0">
                         <h3 class="text-lg font-bold truncate">${sanitize(link.namaTools || 'Tanpa Judul')}</h3>
-                        <a href="${sanitize(link.linkAkses)}" target="_blank" rel="noopener noreferrer" class="text-sm text-blue-600 dark:text-blue-400 hover:underline break-all">
-                            ${sanitize(link.linkAkses)}
-                        </a>
+                        <!-- REVISION: URL diubah menjadi teks kecil dan subtil -->
+                        <p class="text-xs text-notion-text-subtle dark:text-notion-text-subtle-dark truncate">${sanitize(link.linkAkses)}</p>
                     </div>
-                    <div class="flex-shrink-0 ml-4">
+                    <div class="flex-shrink-0 ml-4 flex gap-2"> <!-- Added flex gap-2 for better button layout -->
                         <button class="btn-icon btn-edit-link" data-id="${link.id}" aria-label="Edit link">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </button>
@@ -1845,7 +1873,15 @@
                         </button>
                     </div>
                 </div>
-                ${tagsHTML} <!-- (PERBAIKAN) Ditambahkan di sini -->
+                
+                ${tagsHTML} <!-- Ditampilkan di sini, di bawah judul -->
+
+                <!-- REVISION: Primary button for the link, using a full-width block style -->
+                <a href="${sanitize(link.linkAkses)}" target="_blank" rel="noopener noreferrer" class="btn-primary w-full flex items-center justify-center gap-2">
+                    Buka ${sanitize(link.namaTools || 'Link')}
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002 2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+                
                 ${catatanHTML}
             `;
             return card;
@@ -1875,10 +1911,12 @@
                 );
             });
             
+            // REVISION: Mengubah teks empty state agar sesuai dengan "My Tools"
             if (allLinks.length === 0) { // (PERBAIKAN) Cek data asli
+                emptyStateLink.innerHTML = '<p>Belum ada tools yang disimpan.</p><p class="text-sm">Klik "Tambah Link Baru" untuk memulai.</p>';
                 emptyStateLink.classList.remove('hidden');
             } else if (filteredLinks.length === 0) { // (PERBAIKAN) Cek data filter
-                linkList.innerHTML = `<p class="text-center text-notion-text-subtle py-10">Tidak ada link yang cocok dengan pencarian "${searchInput.value}".</p>`;
+                linkList.innerHTML = `<p class="text-center text-notion-text-subtle py-10">Tidak ada tools yang cocok dengan pencarian "${searchInput.value}".</p>`;
             } else {
                 emptyStateLink.classList.add('hidden');
                 filteredLinks.forEach(link => { // (PERBAIKAN) Gunakan filteredLinks
@@ -2028,7 +2066,8 @@
                 return temp.innerHTML;
             };
 
-            card.className = "bg-notion-card dark:bg-notion-card-dark border border-notion-border dark:border-notion-border-dark rounded-lg shadow-sm overflow-hidden p-4";
+            // REVISION: Menggunakan glass-card
+            card.className = "glass-card overflow-hidden p-4";
             
             const catatanHTML = password.catatan ? `
                 <div class="border-t border-notion-border dark:border-notion-border-dark pt-3 mt-3">
@@ -2408,7 +2447,7 @@
             } else {
                 // Mode Tambah Link
                 linkForm.reset();
-                linkModalTitle.textContent = "Tambah Link Baru";
+                linkModalTitle.textContent = "Tambah Tools Baru";
                 document.getElementById('link-id').value = '';
             }
             
@@ -2871,6 +2910,7 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
                 openConfirmDeleteLinkModal(id, name);
                 return;
             }
+            // Tambahan: Link di card sekarang adalah tombol, klik sudah ditangani oleh tag <a> di dalamnya
         });
         
         // (PERBAIKAN BARU) Event delegation untuk kartu password
@@ -2936,3 +2976,4 @@ Format jawaban Anda dengan jelas menggunakan poin-poin.`;
     </script>
 </body>
 </html>
+
