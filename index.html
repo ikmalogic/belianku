@@ -257,7 +257,8 @@
     <div class="container mx-auto max-w-3xl p-4 md:p-8">
 
         <!-- Header -->
-        <header class="relative flex justify-between items-center mb-6">
+        <!-- REVISION: Menambahkan sticky top-0 bg-notion-bg/90 dark:bg-notion-bg-dark/90 dan backdrop-blur untuk efek lengket -->
+        <header class="relative flex justify-between items-center mb-6 sticky top-0 z-10 py-4 glass-card shadow-lg bg-notion-bg/90 dark:bg-notion-bg-dark/90">
             <div class="flex items-center gap-2 sm:gap-4"> <!-- Wrapper BARU -->
                 <!-- Tombol Hamburger (BARU) -->
                 <button id="sidebar-toggle-btn" class="btn-icon">
@@ -1840,20 +1841,17 @@
                 return temp.innerHTML;
             };
             
-            // Fungsi untuk mendapatkan domain dari URL
+            // Fungsi untuk mendapatkan domain dari URL (Tidak lagi digunakan di tampilan, tapi tetap ada)
             const getDomain = (url) => {
                 try {
                     const parsedUrl = new URL(url);
-                    // Hapus 'www.' jika ada dan ambil hostname
                     return parsedUrl.hostname.replace(/^www\./, '');
                 } catch (e) {
-                    // Jika URL tidak valid, tampilkan string kosong atau pesan default
                     return ''; 
                 }
             };
             
-            const domainName = getDomain(link.linkAkses || '');
-
+            // const domainName = getDomain(link.linkAkses || ''); // Dihapus dari penggunaan di bawah
 
             // REVISION: Menggunakan class 'uppercase' untuk judul
             card.className = "glass-card overflow-hidden p-4 space-y-4";
