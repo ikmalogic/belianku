@@ -257,8 +257,8 @@
     <div class="container mx-auto max-w-3xl p-4 md:p-8">
 
         <!-- Header -->
-        <!-- REVISION: Menambahkan sticky top-0 bg-notion-bg/90 dark:bg-notion-bg-dark/90 dan backdrop-blur untuk efek lengket -->
-        <header class="relative flex justify-between items-center mb-6 sticky top-0 z-10 py-4 glass-card shadow-lg bg-notion-bg/90 dark:bg-notion-bg-dark/90">
+        <!-- REVISION: Kelas glass-card, shadow-lg, dan latar belakang transparan/blur dihapus. Background tetap mengikuti body. -->
+        <header class="relative flex justify-between items-center mb-6 sticky top-0 z-10 py-4">
             <div class="flex items-center gap-2 sm:gap-4"> <!-- Wrapper BARU -->
                 <!-- Tombol Hamburger (BARU) -->
                 <button id="sidebar-toggle-btn" class="btn-icon">
@@ -1283,7 +1283,7 @@
             addPasswordBtnWrapper.classList.add('hidden'); // (PERBAIKAN BARU)
             
             // 4. Sembunyikan UI header spesifik (search)
-            searchToggleBtn.classList.add('hidden');
+            searchToggleBtn.classList.remove('hidden'); // Dipertahankan karena tombol search tidak ada di header sticky
             searchWrapper.classList.add('hidden');
             cardToggleWrapper.classList.add('hidden'); // Sembunyikan toggle kartu
             if (!searchWrapper.classList.contains('hidden')) { // hanya reset jika terbuka
